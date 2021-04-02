@@ -1,12 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-top-nav-bar',
   templateUrl: './top-nav-bar.component.html',
   styleUrls: ['./top-nav-bar.component.css']
 })
-export class TopNavBarComponent {
-  
+
+export class TopNavBarComponent implements OnInit {
+  useDarkTheme: boolean = false;
+
   constructor() { }
 
+  ngOnInit(): void {
+    this.updateTopNav();
+  }
+
+  switchTheme() {
+    this.useDarkTheme = !this.useDarkTheme;
+
+    this.updateTopNav();
+  }
+
+  updateTopNav(): void {
+    const topNav = document.getElementById('top-nav');
+
+    if (!this.useDarkTheme) {
+      topNav.classList.remove('navbar-dark', 'bg-dark');
+      topNav.classList.add('navbar-light', 'bg-light');
+    } else {    
+      topNav.classList.remove('navbar-light', 'bg-light');
+      topNav.classList.add('navbar-dark', 'bg-dark');
+    }
+  }
 }
