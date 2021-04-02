@@ -1,1 +1,7 @@
-<video id="player"></video>
+<div id="player-div"></div>
+<div *ngIf="streamEnded">
+    <div class="p-3 mb-5 text-center position-absolute top-50 start-50 translate-middle bg-body rounded shadow-lg">
+        Seems that current stream has ended or became unavailable. Try to wait and see if stream comes back live.
+        <br/> Otherwise <a routerLink="/" title="Home">you can start your own stream!</a>
+    </div>
+</div>

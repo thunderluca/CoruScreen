@@ -12,6 +12,9 @@ import { SignalingService } from '../services/signaling.service';
   styleUrls: ['./viewer.component.css']
 })
 export class ViewerComponent implements OnInit {
+  streamEnded: boolean = true;
+
+  private currentPlayerType: string;
   private currentStream?: MediaStream;
   private streamId: string;
   private eventsSubscription: Subscription = new Subscription();
@@ -43,12 +46,16 @@ export class ViewerComponent implements OnInit {
           });
 
           this.eventsSubscription.add(this.rtc.stream$.subscribe((signal: SignalingData) => {
-            this.playVideo(signal);
+            this.streamEnded = false;
+
+            this.startPlayer(signal, true);
           }));
 
           this.eventsSubscription.add(this.signaling.streamStopped$.subscribe((result: boolean) => {
             if (result) {
-              this.stopVideo();
+              this.stopPlayer();
+
+              this.streamEnded = true;
             }
           }));
          
@@ -72,25 +79,52 @@ export class ViewerComponent implements OnInit {
       });
   }
 
-  private playVideo(signal: SignalingData): void {
-    const logPrefix = 'ViewerComponent.playVideo - ';
+  private isVideoStream(stream: MediaStream): boolean {
+    if (!stream) {
+      return false;
+    }
+
+    let videoTrackFound = false;
+
+    stream.getTracks().forEach(track => {
+      if (track.kind === 'video') {
+        videoTrackFound = true;
+      }
+    });
+
+    return videoTrackFound;
+  }
+
+  private startPlayer(signal: SignalingData, useControls: boolean): void {
+    const logPrefix = 'ViewerComponent.startPlayer - ';
 
     this.currentStream = signal.data as MediaStream;
 
-    const videoPlayer = document.getElementById('player') as HTMLVideoElement;
-    videoPlayer.srcObject = this.currentStream;
-    videoPlayer.play();
+    const type = this.isVideoStream(this.currentStream) ? 'video' : 'audio';
 
-    this.log.debug(logPrefix + 'Video player added');
+    this.currentPlayerType = type;
+
+    const player = document.createElement(type);
+
+    if (useControls) {
+      player.setAttribute('controls', '');
+    }
+
+    player.srcObject = this.currentStream;
+    document.getElementById('player-div').appendChild(player);
+    player.play();
+
+    this.log.debug(logPrefix + 'Player added');
   }
 
-  private stopVideo(): void {
+  private stopPlayer(): void {
     const logPrefix = 'ViewerComponent.stopVideo - ';
 
-    const videoPlayer = document.getElementById('player') as HTMLVideoElement;
-    videoPlayer.pause();
-    videoPlayer.currentTime = 0;
-    videoPlayer.srcObject = null;
+    const player = document.getElementById('player-div').querySelector(this.currentPlayerType) as HTMLMediaElement;
+    player.pause();
+    player.currentTime = 0;
+    player.srcObject = null;
+    player.parentElement.removeChild(player);
         
     this.currentStream.getTracks()
       .forEach(track => {
@@ -102,6 +136,6 @@ export class ViewerComponent implements OnInit {
 
     this.rtc.destroyPeers();
 
-    this.log.debug(logPrefix + 'Video player stopped');
+    this.log.debug(logPrefix + 'Player stopped');
   }
 }
