@@ -1,0 +1,86 @@
+<app-top-nav-bar></app-top-nav-bar>
+<div class="container-fluid">
+    <div class="row py-3">
+        <div class="accordion" id="setup-accordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="choice-header">
+                    <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#choice-collapse" (click)="resetWizard()">Select device</button>
+                </h2>
+                <div class="accordion-collapse collapse show" id="choice-collapse" aria-labelledby="#choice-header" data-bs-parent="#setup-accordion">
+                    <div class="accordion-body">
+                        <button type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(0)">Screen</button>
+                        <button type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(1)">Webcam</button>
+                        <button type="button" class="btn btn-primary" (click)="chooseDeviceType(2)">Microphone</button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="options-header">
+                    <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#options-collapse">Configuration</button>
+                </h2>
+                <div class="accordion-collapse collapse" id="options-collapse" aria-labelledby="#options-header" data-bs-parent="#setup-accordion">
+                    <div class="accordion-body">
+                        <div [class]="deviceTypeChosen() ? 'd-none' : ''">You need to choose the device type first</div>
+                        <div [class]="deviceTypeChosen() ? '' : 'd-none'">
+                            <div class="mb-3 form-check form-switch">
+                                <input type="checkbox" class="form-check-input" id="adv-options" name="adv-options" [(ngModel)]="advancedDeviceOptions" />
+                                <label class="form-check-label" for="adv-options">Advanced options</label>
+                            </div>
+                            <div class="row mb-3">
+                                <div [class]="userMedia ? 'col' : 'col d-none'">
+                                    <app-device-selector></app-device-selector>
+                                </div>
+                                <div [class]="videoStreaming && advancedDeviceOptions ? 'col' : 'col d-none'">
+                                    <app-video-options></app-video-options>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary" (click)="validateOptions()">Confirm options</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="control-header">
+                    <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#control-collapse">Stream</button>
+                </h2>
+                <div class="accordion-collapse collapse" id="control-collapse" aria-labelledby="#control-header" data-bs-parent="#setup-accordion">
+                    <div class="accordion-body">
+                        <div *ngIf="!deviceTypeChosen()">You need to choose the device type first</div>
+                        <div *ngIf="deviceTypeChosen()">
+                            <div class="row">
+                                <div class="col-3">
+                                    <button *ngIf="!streamingStarted" type="button" class="btn btn-primary" (click)="startStream()">Start stream</button>
+                                    <button *ngIf="streamingStarted" type="button" class="btn btn-danger" (click)="stopStream()">Stop stream</button>
+                                </div>
+                                <div class="col-9">
+                                    <div class="row" *ngIf="shareUrl">
+                                        <!-- <label for="share-url" class="form-label col-3">Stream URL</label> -->
+                                        <div class="col-9">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text" id="share-url-span">Stream URL</span>
+                                                <input type="text" class="form-control" id="share-url" name="share-url" readonly [value]="shareUrl" aria-describedby="share-url-span" />
+                                                <button type="button" class="btn btn-outline-secondary" id="copylink-button" (click)="copyLinkToClipboard()">Copy link</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-3 py-1">
+                                            <a [href]="shareUrl" target="_blank">Open in new tab</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row py-3 px-1">
+        <div class="col-md-12">
+            <h4 *ngIf="streamingStarted">Live preview</h4>
+            <div id="preview-div"></div>
+        </div>
+    </div>
+</div>

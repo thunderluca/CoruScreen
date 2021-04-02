@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col">
+        <div class="mb-3">
+            <label for="selected-device" class="form-label">Input device</label>
+            <select class="form-select" name="selected-device" id="selected-device" [(ngModel)]="selectedDeviceId" (ngModelChange)="validate()">
+                <option [ngValue]="null">Select device</option>
+                <option *ngFor="let device of availableDevices" [value]="device.deviceId">
+                    {{ device | mediaDeviceDescription }}
+                </option>
+            </select>
+            <div class="text-danger" *ngIf="!validDeviceId">Choose a device</div>
+        </div>
+    </div>
+</div>
