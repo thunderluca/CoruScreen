@@ -22,6 +22,9 @@
                     <div class="accordion-body">
                         <div [class]="deviceTypeChosen() ? 'd-none' : ''">You need to choose the device type first</div>
                         <div [class]="deviceTypeChosen() ? '' : 'd-none'">
+                            <div class="mb-3">
+                                <h6>If device lists doesn't show any available option, please control your browser permissions.</h6>
+                            </div>
                             <div class="mb-3 form-check form-switch">
                                 <input type="checkbox" class="form-check-input" id="adv-options" name="adv-options" [(ngModel)]="advancedDeviceOptions" />
                                 <label class="form-check-label" for="adv-options">Advanced options</label>
