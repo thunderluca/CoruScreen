@@ -19,7 +19,7 @@ export class MediaService {
 
     let devices = await navigator.mediaDevices.enumerateDevices();
 
-    devices = devices.filter(device => kinds.indexOf(device.kind) > -1);
+    devices = devices.filter(device => device.label != '' && kinds.indexOf(device.kind) > -1);
 
     return devices;
   }
