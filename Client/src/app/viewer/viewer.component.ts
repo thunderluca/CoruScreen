@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SignalingData } from '../models/signaling-data';
+import { StreamStatus } from '../models/stream-status';
 import { LogService } from '../services/log.service';
 import { RtcService } from '../services/rtc.service';
 import { SignalingService } from '../services/signaling.service';
+
+const CONNECTION_MAX_TIMEOUT_IN_SECONDS: number = 20;
 
 @Component({
   selector: 'app-viewer',
@@ -12,8 +15,10 @@ import { SignalingService } from '../services/signaling.service';
   styleUrls: ['./viewer.component.css']
 })
 export class ViewerComponent implements OnInit {
-  streamEnded: boolean = true;
+  streamStatus: StreamStatus = StreamStatus.Buffering;
+  useDarkTheme: boolean = false;
 
+  private connectionTickCounter: number;
   private currentPlayerType: string;
   private currentStream?: MediaStream;
   private streamId: string;
@@ -33,6 +38,8 @@ export class ViewerComponent implements OnInit {
       throw new Error('Stream ID cannot be null, empty or blank');
     }
 
+    this.useDarkTheme = this.activatedRoute.snapshot.queryParams.dt === '1';
+
     this.signaling.startAsync()
       .then(result => {
         if (result) {
@@ -46,16 +53,18 @@ export class ViewerComponent implements OnInit {
           });
 
           this.eventsSubscription.add(this.rtc.stream$.subscribe((signal: SignalingData) => {
-            this.streamEnded = false;
+            this.streamStatus = StreamStatus.Buffering;
 
             this.startPlayer(signal, true);
+
+            this.streamStatus = StreamStatus.Playing;
           }));
 
           this.eventsSubscription.add(this.signaling.streamStopped$.subscribe((result: boolean) => {
             if (result) {
               this.stopPlayer();
 
-              this.streamEnded = true;
+              this.streamStatus = StreamStatus.Ended;
             }
           }));
          
@@ -63,6 +72,8 @@ export class ViewerComponent implements OnInit {
             .then(result => {
               if (result) {
                 this.log.debug(logPrefix + 'Registered to group');
+
+                this.startTimeout();
               } else {
                 this.log.warn(logPrefix + 'Group registration failed');
               }
@@ -95,6 +106,37 @@ export class ViewerComponent implements OnInit {
     return videoTrackFound;
   }
 
+  private startTimeout(): void {
+    this.connectionTickCounter = 0;
+
+    const timeout = setInterval(() => {
+      this.connectionTickCounter++;
+
+      const mod = this.connectionTickCounter % 4;
+
+      let connectionLabel = 'Connecting';
+
+      if (mod > 0) {
+        for (let i = 0; i < mod; i++) {
+          connectionLabel += '.';
+        }
+      }
+
+      document.getElementById('connection-div').innerText = connectionLabel;
+
+      if (this.streamStatus !== StreamStatus.Buffering) {
+        clearInterval(timeout);
+        return;
+      }
+
+      if (this.connectionTickCounter >= CONNECTION_MAX_TIMEOUT_IN_SECONDS) {
+        this.streamStatus = StreamStatus.Ended;
+        clearInterval(timeout);
+        return;
+      }
+    }, 1000);
+  }
+
   private startPlayer(signal: SignalingData, useControls: boolean): void {
     const logPrefix = 'ViewerComponent.startPlayer - ';
 
@@ -108,6 +150,12 @@ export class ViewerComponent implements OnInit {
 
     if (useControls) {
       player.setAttribute('controls', '');
+    }
+
+    if (type === 'audio') {
+      player.setAttribute('class', 'position-absolute top-50 start-50 translate-middle');
+    } else {
+      player.style.width = '100%';
     }
 
     player.srcObject = this.currentStream;
