@@ -4,7 +4,7 @@
         <div class="accordion" id="setup-accordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="choice-header">
-                    <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#choice-collapse" (click)="reset()">Select device</button>
+                    <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#choice-collapse" (click)="reset()">Select source</button>
                 </h2>
                 <div class="accordion-collapse collapse show" id="choice-collapse" aria-labelledby="#choice-header" data-bs-parent="#setup-accordion">
                     <div class="accordion-body">
@@ -16,7 +16,7 @@
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="options-header">
-                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#options-collapse">Configuration</button>
+                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#options-collapse">Configure</button>
                 </h2>
                 <div class="accordion-collapse collapse" id="options-collapse" aria-labelledby="#options-header" data-bs-parent="#setup-accordion">
                     <div class="accordion-body">
@@ -38,7 +38,7 @@
                                 </div>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-primary" (click)="validateOptions()">Confirm options</button>
+                                <button type="button" [class]="advancedDeviceOptions ? 'btn btn-primary' : 'btn btn-primary default-opt'" id="confirm-config-btn" (click)="validateOptions()"></button>
                             </div>
                         </div>
                     </div>

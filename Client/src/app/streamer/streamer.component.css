@@ -1,3 +1,7 @@
-#preview-video {
-    max-width: 100%;
+#confirm-config-btn.default-opt:after {
+    content: 'Use default options';
+}
+
+#confirm-config-btn:not(.default-opt):after {
+    content: 'Confirm options';
 }

@@ -170,6 +170,11 @@ export class StreamerComponent implements OnInit {
   stopStream(): void {
     const logPrefix = 'StreamerComponent.stopStream';
 
+    const result: Boolean = confirm('Are you sure to stop current stream?');
+    if (!result) {
+      return;
+    }
+
     this.signaling.endStreamAsync(this.streamId)
       .then(() => {
         this.stopPlayer();
@@ -194,7 +199,7 @@ export class StreamerComponent implements OnInit {
       })
       .catch((err: any) => {
         this.log.error(logPrefix + err);
-      }) 
+      });
   }
 
   validateOptions(): void {
@@ -245,6 +250,10 @@ export class StreamerComponent implements OnInit {
 
     if (useControls) {
       player.setAttribute('controls', '');
+    }
+
+    if (type === 'video') {
+      player.style.maxWidth = '100%';
     }
 
     player.srcObject = this.currentStream;
