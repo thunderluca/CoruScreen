@@ -9,7 +9,7 @@ export class MediaService {
 
   constructor(private log: LogService) {}
 
-  async getAvailableInputDevicesAsync(kind: MediaDeviceKind): Promise<MediaDeviceInfo[]> {
+  async getAvailableInputDevicesAsync(kinds: MediaDeviceKind[]): Promise<MediaDeviceInfo[]> {
     const logPrefix = 'MediaService.getAvailableInputDevices - ';
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -19,7 +19,7 @@ export class MediaService {
 
     let devices = await navigator.mediaDevices.enumerateDevices();
 
-    devices = devices.filter(device => device.kind === kind);
+    devices = devices.filter(device => kinds.indexOf(device.kind) > -1);
 
     return devices;
   }

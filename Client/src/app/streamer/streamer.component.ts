@@ -47,13 +47,13 @@ export class StreamerComponent implements OnInit {
       case 1: {
         this.videoStreaming = true;
         this.userMedia = true;
-        this.deviceSelector.loadDeviceList(true);
+        this.deviceSelector.loadDeviceList(['videoinput']);
         break;
       }
       case 2: {
         this.videoStreaming = false;
         this.userMedia = true;
-        this.deviceSelector.loadDeviceList(false);
+        this.deviceSelector.loadDeviceList(['audioinput']);
         break;
       }
     }
@@ -119,12 +119,17 @@ export class StreamerComponent implements OnInit {
     }));
   }
 
-  resetWizard(): void {
+  reset(): void {
+    this.advancedDeviceOptions = false;
     this.videoStreaming = null;
     this.userMedia = null;
     
     if (this.deviceSelector) {
       this.deviceSelector.reset();
+    }
+    
+    if (this.videoOptions) {
+      this.videoOptions.reset();
     }
   }
 
@@ -183,7 +188,7 @@ export class StreamerComponent implements OnInit {
     
         this.streamingStarted = false;
         
-        this.resetWizard();
+        this.reset();
 
         document.getElementById('choice-header').querySelector('button').click();
       })
@@ -200,8 +205,17 @@ export class StreamerComponent implements OnInit {
     document.getElementById('control-header').querySelector('button').click();
   }
 
-  private manageStream(logPrefix: string, stream: MediaStream): void {
+  private async manageStream(logPrefix: string, stream: MediaStream): Promise<void> {
     this.currentStream = stream;
+
+    if (this.videoOptions.useSecondaryAudioSource) {
+      const secondaryAudioDeviceStream: MediaStream = await this.media.getAudioDevice(this.videoOptions.deviceSelector.selectedDeviceId);
+      if (secondaryAudioDeviceStream) {
+        secondaryAudioDeviceStream.getAudioTracks().forEach(track => {
+          this.currentStream.addTrack(track);
+        });
+      }
+    }
 
     this.shareUrl = window.location.origin + '/view?id=' + this.streamId;
 

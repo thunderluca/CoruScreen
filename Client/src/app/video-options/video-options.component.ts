@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { from } from 'rxjs';
 import { groupBy, mergeMap, reduce, toArray } from 'rxjs/operators';
+import { DeviceSelectorComponent } from '../device-selector/device-selector.component';
 import { GroupOf } from '../models/group-of';
 import { Size } from '../models/size';
 
@@ -10,17 +11,36 @@ import { Size } from '../models/size';
   styleUrls: ['./video-options.component.css']
 })
 export class VideoOptionsComponent implements OnInit {
+  @ViewChild(DeviceSelectorComponent) deviceSelector: DeviceSelectorComponent;
 
   availableFrameRates: number[] = this.getCommonFrameRates();
   availableSizes: GroupOf<Size>[] = [];
   selectedFrameRate?: number = 0;
   selectedSize?: Size = null;
+  useSecondaryAudioSource: boolean;
   useSourceAudio: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
     this.updateAvailableSizes();
+  }
+
+  onSecondaryAudioSourceChanged(): void {
+    if (this.useSecondaryAudioSource) {
+      this.deviceSelector.loadDeviceList(['audioinput', 'audiooutput']);
+    }
+  }
+
+  reset(): void {
+    this.selectedFrameRate = null;
+    this.selectedSize = null;
+    this.useSourceAudio;
+    this.useSecondaryAudioSource = false;
+    
+    if (this.deviceSelector) {
+      this.deviceSelector.reset();
+    }
   }
 
   private getCommonFrameRates(): number[] {

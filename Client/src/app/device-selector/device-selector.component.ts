@@ -17,10 +17,10 @@ export class DeviceSelectorComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  loadDeviceList(isVideoInput: boolean): void {
+  loadDeviceList(kinds: MediaDeviceKind[]): void {
     const logPrefix = 'DeviceSelectorComponent.loadDeviceList - ';
 
-    this.media.getAvailableInputDevicesAsync(isVideoInput ? 'videoinput' : 'audioinput')
+    this.media.getAvailableInputDevicesAsync(kinds)
       .then(devices => {
         if (!devices || !devices.length || devices.length === 0) {
           this.log.debug(logPrefix + 'Devices not found');

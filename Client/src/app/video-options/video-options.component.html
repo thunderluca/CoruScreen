@@ -13,9 +13,16 @@
                 Selected size {{ selectedSize | size}}
             </div>
         </div>
-        <div class="mb-3 form-check form-switch">
+        <div [class]="useSecondaryAudioSource ? 'd-none' : 'mb-3 form-check form-switch'">
             <input type="checkbox" class="form-check-input" id="source-audio" name="source-audio" [(ngModel)]="useSourceAudio" />
             <label class="form-check-label" for="source-audio">Use source audio</label>
+        </div>
+        <div [class]="useSourceAudio ? 'd-none' :  'mb-3 form-check form-switch'">
+            <input type="checkbox" class="form-check-input" id="secondary-audio-source" name="secondary-audio-source" [(ngModel)]="useSecondaryAudioSource" (change)="onSecondaryAudioSourceChanged()" />
+            <label class="form-check-label" for="secondary-audio-source">Use secondary audio source</label>
+        </div>
+        <div [class]="useSecondaryAudioSource ? 'mb-3' : 'd-none'">
+            <app-device-selector></app-device-selector>
         </div>
     </div>
     <div class="col">
