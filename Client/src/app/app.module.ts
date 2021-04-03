@@ -11,6 +11,7 @@ import { TopNavBarComponent } from './top-nav-bar/top-nav-bar.component';
 import { VideoOptionsComponent } from './video-options/video-options.component';
 import { DeviceSelectorComponent } from './device-selector/device-selector.component';
 import { MediaDeviceDescriptionPipe } from './pipes/media-device-description.pipe';
+import { NotSupportedComponent } from './not-supported/not-supported.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { MediaDeviceDescriptionPipe } from './pipes/media-device-description.pip
     TopNavBarComponent,
     VideoOptionsComponent,
     DeviceSelectorComponent,
-    MediaDeviceDescriptionPipe
+    MediaDeviceDescriptionPipe,
+    NotSupportedComponent
   ],
   imports: [
     BrowserModule,

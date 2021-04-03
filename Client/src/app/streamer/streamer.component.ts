@@ -80,12 +80,6 @@ export class StreamerComponent implements OnInit {
   ngOnInit(): void {
     const logPrefix = 'StreamerComponent.ngOnInit - ';
 
-    const isWebRTCAvailable = this.rtc.isWebRTCAvailable();
-    if (!isWebRTCAvailable) {
-      this.log.error('WebRTC not available');
-      return;
-    }
-
     this.streamId = this.rng.generate(8);
 
     this.signaling.startAsync()
