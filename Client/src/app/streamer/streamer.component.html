@@ -56,7 +56,7 @@
                                 <div class="col-3">
                                     <button *ngIf="!streamingStarted" type="button" class="btn btn-primary me-3" (click)="startStream()">Start stream</button>
                                     <button *ngIf="streamingStarted" type="button" class="btn btn-danger me-3" (click)="stopStream()">Stop stream</button>
-                                    <span *ngIf="viewers.length > 0">Viewers count: {{ viewers.length }}</span>
+                                    <span *ngIf="viewers.length > 0">Viewers: {{ viewers.length }}</span>
                                 </div>
                                 <div class="col-9">
                                     <div class="row" *ngIf="shareUrl">
