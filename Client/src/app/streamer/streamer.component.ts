@@ -22,13 +22,13 @@ export class StreamerComponent implements OnInit {
   shareUrl: string;
   streamingStarted: boolean;
   videoStreaming?: boolean = null;
+  viewers: string[] = [];
   userMedia?: boolean = null;
 
   private currentPlayerType: string;
   private currentStream: MediaStream;
   private streamId: string;
   private eventsSubscription: Subscription = new Subscription();
-  private viewers: string[] = [];
 
   constructor(
     private log: LogService,
@@ -114,8 +114,15 @@ export class StreamerComponent implements OnInit {
       });
 
     this.eventsSubscription.add(this.signaling.viewers$.subscribe((ids: string[]) => {
+      const userLeaved = this.viewers.length > ids.length;
       this.viewers = ids;
-      this.rtc.getOrCreateSpectatorPeer(ids[ids.length - 1], this.currentStream);
+      if (userLeaved) {
+        this.viewers
+          .filter(vid => ids.indexOf(vid) === -1)
+          .forEach(id => this.rtc.removePeer(id));
+      } else {
+        this.rtc.getOrCreateSpectatorPeer(ids[ids.length - 1], this.currentStream);
+      }
     }));
   }
 

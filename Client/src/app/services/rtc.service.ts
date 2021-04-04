@@ -76,6 +76,17 @@ export class RtcService {
     return SimplePeer.WEBRTC_SUPPORT;
   }
 
+  removePeer(clientId: string) {
+    if (this.connections && this.connections[clientId]) {
+      const peerToDestroy: Instance = this.connections[clientId];
+      if (peerToDestroy) {
+        peerToDestroy.destroy();
+
+        delete this.connections[clientId];
+      }
+    }
+  }
+
   signalPeer(initiator: boolean, clientId: string, signal: string, stream?: MediaStream): void {
     const data = JSON.parse(signal);
 

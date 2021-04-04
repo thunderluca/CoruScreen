@@ -44,6 +44,8 @@ export class SignalingService {
 
     this.connection.on('userJoined', (guestId: string) => this.onUserJoined(guestId));
 
+    this.connection.on('userLeaved', (guestId: string) => this.onUserLeaved(guestId));
+
     try {
       await this.connection.invoke('create', id);
 
@@ -76,6 +78,20 @@ export class SignalingService {
 
     try {
       await this.connection.invoke('join', id);
+
+      return true;
+    } catch (error: any) {
+      this.log.error(logPrefix + error);
+
+      return false;
+    }
+  }
+
+  async leaveAsync(id: string): Promise<boolean> {
+    const logPrefix = 'SignalingService.leaveAsync - ';
+
+    try {
+      await this.connection.invoke('leave', id);
 
       return true;
     } catch (error: any) {
@@ -143,6 +159,16 @@ export class SignalingService {
       this.log.warn(logPrefix + 'User with id "' + id + '" is already registered, skipping it');
     } else {
       this.viewers.next([...this.viewers.getValue(), id]);
+    }
+  }
+
+  private onUserLeaved(id: string): void {
+    const logPrefix = 'SignalingService.onUserLeaved - ';
+
+    if (this.viewers.getValue().indexOf(id) === -1) {
+      this.log.warn(logPrefix + 'User with id "' + id + '" is already removed, skipping it');
+    } else {
+      this.viewers.next(this.viewers.getValue().filter(vid => vid !== id));
     }
   }
 }

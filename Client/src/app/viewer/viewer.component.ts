@@ -88,6 +88,22 @@ export class ViewerComponent implements OnInit {
       .catch((err: any) => {
         this.log.error(logPrefix + err);
       });
+  
+    window.onbeforeunload = () => {
+      const logPrefix = 'ViewerComponent.onWindowBeforeunload - ';
+  
+      if (this.signaling) {
+        this.signaling.leaveAsync(this.streamId)
+          .then(() => {
+            this.rtc.destroyPeers();
+    
+            this.signaling.stopAsync();
+          })
+          .catch((err: any) => {
+            this.log.error(logPrefix + err);
+          });
+      }
+    }
   }
 
   private isVideoStream(stream: MediaStream): boolean {
@@ -110,6 +126,11 @@ export class ViewerComponent implements OnInit {
     this.connectionTickCounter = 0;
 
     const timeout = setInterval(() => {
+      if (this.streamStatus !== StreamStatus.Buffering) {
+        clearInterval(timeout);
+        return;
+      }
+
       this.connectionTickCounter++;
 
       const mod = this.connectionTickCounter % 4;
@@ -123,11 +144,6 @@ export class ViewerComponent implements OnInit {
       }
 
       document.getElementById('connection-div').innerText = connectionLabel;
-
-      if (this.streamStatus !== StreamStatus.Buffering) {
-        clearInterval(timeout);
-        return;
-      }
 
       if (this.connectionTickCounter >= CONNECTION_MAX_TIMEOUT_IN_SECONDS) {
         this.streamStatus = StreamStatus.Ended;

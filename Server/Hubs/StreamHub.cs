@@ -39,7 +39,16 @@ namespace CoruScreen.Server.Hubs
 
             await Clients.GroupExcept(id, Context.ConnectionId).SendAsync("userJoined", Context.ConnectionId);
 
-            _logger.LogInformation($"User with id {Context.ConnectionId} added to  stream group {id}");
+            _logger.LogInformation($"User with id {Context.ConnectionId} added to stream group {id}");
+        }
+
+        public async Task Leave(string id)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, id);
+
+            await Clients.GroupExcept(id, Context.ConnectionId).SendAsync("userLeaved", Context.ConnectionId);
+
+            _logger.LogInformation($"User with id {Context.ConnectionId} leaved stream group {id}");
         }
 
         public async Task SendSignal(string clientId, string signal)
