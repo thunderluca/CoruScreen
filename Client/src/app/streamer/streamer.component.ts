@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { DeviceDetectorService } from 'ngx-device-detector';
 import { Subscription } from 'rxjs';
 import { DeviceSelectorComponent } from '../device-selector/device-selector.component';
 import { Size } from '../models/size';
@@ -19,6 +20,7 @@ export class StreamerComponent implements OnInit {
   @ViewChild(DeviceSelectorComponent) deviceSelector: DeviceSelectorComponent;
 
   advancedDeviceOptions: boolean;
+  isDesktopDevice: boolean;
   shareUrl: string;
   streamingStarted: boolean;
   videoStreaming?: boolean = null;
@@ -31,6 +33,7 @@ export class StreamerComponent implements OnInit {
   private eventsSubscription: Subscription = new Subscription();
 
   constructor(
+    private deviceDetector: DeviceDetectorService,
     private log: LogService,
     private media: MediaService,
     private rng: RngService,
@@ -79,6 +82,8 @@ export class StreamerComponent implements OnInit {
 
   ngOnInit(): void {
     const logPrefix = 'StreamerComponent.ngOnInit - ';
+
+    this.isDesktopDevice = this.deviceDetector.isDesktop();
 
     this.streamId = this.rng.generate(8);
 

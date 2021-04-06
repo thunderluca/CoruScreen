@@ -9,7 +9,7 @@
                     </h2>
                     <div class="accordion-collapse collapse show" id="choice-collapse" aria-labelledby="choice-header" data-bs-parent="#setup-accordion">
                         <div class="accordion-body">
-                            <button type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(0)">Screen</button>
+                            <button *ngIf="isDesktopDevice" type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(0)">Screen</button>
                             <button type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(1)">Webcam</button>
                             <button type="button" class="btn btn-primary" (click)="chooseDeviceType(2)">Microphone</button>
                         </div>
