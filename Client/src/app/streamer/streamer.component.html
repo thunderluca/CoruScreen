@@ -60,19 +60,7 @@
                                         <span *ngIf="viewers.length > 0">Viewers: {{ viewers.length }}</span>
                                     </div>
                                     <div class="col-9">
-                                        <div class="row" *ngIf="shareUrl">
-                                            <!-- <label for="share-url" class="form-label col-3">Stream URL</label> -->
-                                            <div class="col-9">
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text" id="share-url-span">Stream URL</span>
-                                                    <input type="text" class="form-control" id="share-url" name="share-url" readonly [value]="shareUrl" aria-describedby="share-url-span" />
-                                                    <button type="button" class="btn btn-outline-secondary" id="copylink-button" (click)="copyLinkToClipboard()">Copy link</button>
-                                                </div>
-                                            </div>
-                                            <div class="col-3 py-1">
-                                                <a [href]="shareUrl" target="_blank">Open in new tab</a>
-                                            </div>
-                                        </div>
+                                        <app-share-stream></app-share-stream>
                                     </div>
                                 </div>
                             </div>

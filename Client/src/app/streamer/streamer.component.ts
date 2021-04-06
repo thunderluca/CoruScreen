@@ -8,6 +8,7 @@ import { MediaService } from '../services/media.service';
 import { RngService } from '../services/rng.service';
 import { RtcService } from '../services/rtc.service';
 import { SignalingService } from '../services/signaling.service';
+import { ShareStreamComponent } from '../share-stream/share-stream.component';
 import { VideoOptionsComponent } from '../video-options/video-options.component';
 
 @Component({
@@ -18,10 +19,10 @@ import { VideoOptionsComponent } from '../video-options/video-options.component'
 export class StreamerComponent implements OnInit {
   @ViewChild(VideoOptionsComponent) videoOptions: VideoOptionsComponent;
   @ViewChild(DeviceSelectorComponent) deviceSelector: DeviceSelectorComponent;
+  @ViewChild(ShareStreamComponent) shareStream: ShareStreamComponent;
 
   advancedDeviceOptions: boolean;
   isDesktopDevice: boolean;
-  shareUrl: string;
   streamingStarted: boolean;
   videoStreaming?: boolean = null;
   viewers: string[] = [];
@@ -62,15 +63,6 @@ export class StreamerComponent implements OnInit {
     }
 
     document.getElementById('options-header').querySelector('button').click();
-  }
-
-  copyLinkToClipboard(): void {
-    const shareUrlElement = document.getElementById('share-url') as HTMLInputElement;
-
-    shareUrlElement.select();
-    shareUrlElement.setSelectionRange(0, this.shareUrl.length);
-
-    document.execCommand('copy');
   }
 
   deviceTypeChosen(): boolean {
@@ -132,16 +124,15 @@ export class StreamerComponent implements OnInit {
   }
 
   reset(): void {
-    this.advancedDeviceOptions = false;
-    this.videoStreaming = null;
-    this.userMedia = null;
-    
-    if (this.deviceSelector) {
-      this.deviceSelector.reset();
-    }
-    
-    if (this.videoOptions) {
-      this.videoOptions.reset();
+    if (this.streamingStarted) {
+      const result = confirm('You are currently streaming! If you proceed, the current stream will be stopped. Do you confirm?');
+      if (!result) {
+        return;
+      }
+
+      this.stopStream(true);
+    } else {
+      this.resetOptions();
     }
   }
 
@@ -179,12 +170,14 @@ export class StreamerComponent implements OnInit {
     }
   }
 
-  stopStream(): void {
+  stopStream(skipConfirm?: boolean): void {
     const logPrefix = 'StreamerComponent.stopStream';
 
-    const result: Boolean = confirm('Are you sure to stop current stream?');
-    if (!result) {
-      return;
+    if (!skipConfirm) {
+      const result = confirm('Are you sure to stop current stream?');
+      if (!result) {
+        return;
+      }
     }
 
     this.signaling.endStreamAsync(this.streamId)
@@ -201,11 +194,11 @@ export class StreamerComponent implements OnInit {
     
         this.rtc.destroyPeers();
         
-        this.shareUrl = null;
+        this.shareStream.resetUrl();
     
         this.streamingStarted = false;
         
-        this.reset();
+        this.resetOptions();
 
         document.getElementById('choice-header').querySelector('button').click();
       })
@@ -234,7 +227,7 @@ export class StreamerComponent implements OnInit {
       }
     }
 
-    this.shareUrl = window.location.origin + '/view?id=' + this.streamId;
+    this.shareStream.setUrl(window.location.origin + '/view?id=' + this.streamId);
 
     this.streamingStarted = true;
 
@@ -246,6 +239,20 @@ export class StreamerComponent implements OnInit {
       this.viewers.forEach(id => {
         this.rtc.getOrCreateSpectatorPeer(id, this.currentStream);
       });
+    }
+  }
+
+  private resetOptions(): void {
+    this.advancedDeviceOptions = false;
+    this.videoStreaming = null;
+    this.userMedia = null;
+    
+    if (this.deviceSelector) {
+      this.deviceSelector.reset();
+    }
+    
+    if (this.videoOptions) {
+      this.videoOptions.reset();
     }
   }
 
