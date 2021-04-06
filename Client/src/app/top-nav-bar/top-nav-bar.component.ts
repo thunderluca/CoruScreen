@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-top-nav-bar',
@@ -9,7 +10,9 @@ import { Component, OnInit } from '@angular/core';
 export class TopNavBarComponent implements OnInit {
   useDarkTheme: boolean = false;
 
-  constructor() { }
+  constructor(activatedRoute: ActivatedRoute) {
+    this.useDarkTheme = activatedRoute.snapshot.queryParams.dt === '1';
+  }
 
   ngOnInit(): void {
     this.updateTopNav();
