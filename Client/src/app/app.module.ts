@@ -12,6 +12,7 @@ import { VideoOptionsComponent } from './video-options/video-options.component';
 import { DeviceSelectorComponent } from './device-selector/device-selector.component';
 import { MediaDeviceDescriptionPipe } from './pipes/media-device-description.pipe';
 import { NotSupportedComponent } from './not-supported/not-supported.component';
+import { ShareStreamComponent } from './share-stream/share-stream.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { NotSupportedComponent } from './not-supported/not-supported.component';
     VideoOptionsComponent,
     DeviceSelectorComponent,
     MediaDeviceDescriptionPipe,
-    NotSupportedComponent
+    NotSupportedComponent,
+    ShareStreamComponent
   ],
   imports: [
     BrowserModule,
