@@ -15,6 +15,7 @@ const CONNECTION_MAX_TIMEOUT_IN_SECONDS: number = 20;
   styleUrls: ['./viewer.component.css']
 })
 export class ViewerComponent implements OnInit {
+  hideStatusMessages: boolean = false;
   streamStatus: StreamStatus = StreamStatus.Buffering;
   useDarkTheme: boolean = false;
 
@@ -37,6 +38,8 @@ export class ViewerComponent implements OnInit {
     if (this.streamId === undefined || this.streamId === null || this.streamId.trim() === '') {
       throw new Error('Stream ID cannot be null, empty or blank');
     }
+
+    this.hideStatusMessages = this.activatedRoute.snapshot.queryParams.hm === '1';
 
     this.useDarkTheme = this.activatedRoute.snapshot.queryParams.dt === '1';
 
@@ -73,7 +76,9 @@ export class ViewerComponent implements OnInit {
               if (result) {
                 this.log.debug(logPrefix + 'Registered to group');
 
-                this.startTimeout();
+                if (!this.hideStatusMessages) {
+                  this.startTimeout();
+                }
               } else {
                 this.log.warn(logPrefix + 'Group registration failed');
               }

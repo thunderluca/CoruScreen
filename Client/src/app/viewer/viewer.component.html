@@ -2,8 +2,8 @@
 
 <main>
     <div id="player-div"></div>
-    <div id="connection-div" *ngIf="streamStatus === 0" class="p-3 mb-5 text-center position-absolute top-50 start-50 translate-middle bg-body rounded shadow-lg">Connecting</div>
-    <div *ngIf="streamStatus === 2" class="p-3 mb-5 text-center position-absolute top-50 start-50 translate-middle bg-body rounded shadow-lg">
+    <div id="connection-div" *ngIf="!hideStatusMessages && streamStatus === 0" class="p-3 mb-5 text-center position-absolute top-50 start-50 translate-middle bg-body rounded shadow-lg">Connecting</div>
+    <div *ngIf="!hideStatusMessages && streamStatus === 2" class="p-3 mb-5 text-center position-absolute top-50 start-50 translate-middle bg-body rounded shadow-lg">
         Seems that current stream has ended or became unreachable. Try to wait and see if stream comes back live.
         <br/> Otherwise <a routerLink="/" title="Home">you can start your own stream!</a>
     </div>
