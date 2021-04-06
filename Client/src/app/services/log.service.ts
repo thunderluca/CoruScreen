@@ -13,9 +13,7 @@ export class LogService {
   }
 
   debug(message: string | any) {
-    if (this.isDebugMode) {
-      this.write(message, '[DEBUG]');
-    }
+    this.write(message, '[DEBUG]');
   }
 
   error(message: string | any) {
@@ -31,6 +29,8 @@ export class LogService {
   }
 
   private write(message: string, prefix: string) {
-    console.log(prefix + ' ' + message);
+    if (this.isDebugMode) {
+      console.log(prefix + ' ' + message);
+    }
   }
 }
