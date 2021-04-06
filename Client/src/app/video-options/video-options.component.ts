@@ -33,7 +33,7 @@ export class VideoOptionsComponent implements OnInit {
   }
 
   reset(): void {
-    this.selectedFrameRate = null;
+    this.selectedFrameRate = 0;
     this.selectedSize = null;
     this.useSourceAudio;
     this.useSecondaryAudioSource = false;
