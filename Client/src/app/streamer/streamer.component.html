@@ -9,9 +9,9 @@
                     </h2>
                     <div class="accordion-collapse collapse show" id="choice-collapse" aria-labelledby="choice-header" data-bs-parent="#setup-accordion">
                         <div class="accordion-body">
-                            <button *ngIf="isDesktopDevice" type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(0)">Screen</button>
-                            <button type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(1)">Webcam</button>
-                            <button type="button" class="btn btn-primary" (click)="chooseDeviceType(2)">Microphone</button>
+                            <button *ngIf="isDesktopDevice" type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(0)" title="Choose Screen to use your display, window or application as streaming video source">Screen</button>
+                            <button type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(1)" title="Choose Webcam to share a webcam as streaming video source">Webcam</button>
+                            <button type="button" class="btn btn-primary" (click)="chooseDeviceType(2)" title="Choose Microphone to use an audio input device as streaming source without video">Microphone</button>
                         </div>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
                                 <div class="mb-3">
                                     <h6>If device lists doesn't show any available option, please control your browser permissions.</h6>
                                 </div>
-                                <div class="mb-3 form-check form-switch">
+                                <div class="mb-3 form-check form-switch" title="Show advanced options for selected streaming device">
                                     <input type="checkbox" class="form-check-input" id="adv-options" name="adv-options" [(ngModel)]="advancedDeviceOptions" />
                                     <label class="form-check-label" for="adv-options">Advanced options</label>
                                 </div>
@@ -39,7 +39,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button type="button" [class]="advancedDeviceOptions ? 'btn btn-primary' : 'btn btn-primary default-opt'" id="confirm-config-btn" (click)="validateOptions()"></button>
+                                    <button type="button" [class]="advancedDeviceOptions ? 'btn btn-primary' : 'btn btn-primary default-opt'" id="confirm-config-btn" (click)="validateOptions()" title="Confirm your selection of streaming device options"></button>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="control-header">
-                        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#control-collapse">Stream</button>
+                        <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#control-collapse" title="Stream">Stream</button>
                     </h2>
                     <div class="accordion-collapse collapse" id="control-collapse" aria-labelledby="control-header" data-bs-parent="#setup-accordion">
                         <div class="accordion-body">
@@ -55,8 +55,8 @@
                             <div *ngIf="deviceTypeChosen()">
                                 <div class="row">
                                     <div class="col-3">
-                                        <button *ngIf="!streamingStarted" type="button" class="btn btn-primary me-3" (click)="startStream()">Start stream</button>
-                                        <button *ngIf="streamingStarted" type="button" class="btn btn-danger me-3" (click)="stopStream()">Stop stream</button>
+                                        <button *ngIf="!streamingStarted" type="button" class="btn btn-primary me-3" (click)="startStream()" title="Start your stream">Start stream</button>
+                                        <button *ngIf="streamingStarted" type="button" class="btn btn-danger me-3" (click)="stopStream()" title="Stop your stream and notify all your viewers">Stop stream</button>
                                         <span *ngIf="viewers.length > 0">Viewers: {{ viewers.length }}</span>
                                     </div>
                                     <div class="col-9">

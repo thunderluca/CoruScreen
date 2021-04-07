@@ -4,13 +4,13 @@
         <div class="input-group mb-3">
             <span class="input-group-text" id="share-url-span">Stream URL</span>
             <input type="text" class="form-control" id="share-url" name="share-url" readonly [value]="fullUrl" aria-describedby="share-url-span" />
-            <button type="button" class="btn btn-outline-secondary" id="copylink-button" (click)="copyLinkToClipboard()">Copy link</button>
+            <button type="button" class="btn btn-outline-secondary" id="copylink-button" (click)="copyLinkToClipboard()" title="Copy stream URL to your device clipboard">Copy link</button>
         </div>
     </div>
     <div class="col-3">
-        <div class="mb-3 form-check form-switch">
+        <div class="mb-3 form-check form-switch" title="Hide status messages on viewer page. This option is useful if you share a link for embedded stream in other websites or applications">
             <input type="checkbox" class="form-check-input" id="viewer-messages" name="viewer-messages" [(ngModel)]="hideStatusMessages" (change)="buildFullUrl()" />
-            <label class="form-check-label" for="viewer-messages">Hide status messages on viewer page (useful if you share a link for embedded stream)</label>
+            <label class="form-check-label" for="viewer-messages">Hide status messages on viewer page</label>
         </div>
     </div>
 </div>

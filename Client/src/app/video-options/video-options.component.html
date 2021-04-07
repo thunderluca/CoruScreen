@@ -1,6 +1,6 @@
 <form class="row">
     <div class="col">
-        <div class="mb-3">
+        <div class="mb-3" title="Select the ideal resolution, if available, for streaming video source">
             <label for="size" class="form-label">Preferred resolution</label>
             <select class="form-select" id="size" name="size" [(ngModel)]="selectedSize">
                 <option [ngValue]="null">Select size</option>
@@ -9,11 +9,11 @@
                 </optgroup>
             </select>
         </div>
-        <div [class]="useSecondaryAudioSource ? 'd-none' : 'mb-3 form-check form-switch'">
+        <div [class]="useSecondaryAudioSource ? 'd-none' : 'mb-3 form-check form-switch'" title="Use audio of streaming video source (i.e., application sounds or webcam integrated microphone)">
             <input type="checkbox" class="form-check-input" id="source-audio" name="source-audio" [(ngModel)]="useSourceAudio" />
             <label class="form-check-label" for="source-audio">Use source audio</label>
         </div>
-        <div [class]="useSourceAudio ? 'd-none' :  'mb-3 form-check form-switch'">
+        <div [class]="useSourceAudio ? 'd-none' :  'mb-3 form-check form-switch'" title="Use secondary audio input/output device together with streaming video source">
             <input type="checkbox" class="form-check-input" id="secondary-audio-source" name="secondary-audio-source" [(ngModel)]="useSecondaryAudioSource" (change)="onSecondaryAudioSourceChanged()" />
             <label class="form-check-label" for="secondary-audio-source">Use secondary audio source</label>
         </div>
@@ -22,7 +22,7 @@
         </div>
     </div>
     <div class="col">
-        <div class="mb-3">
+        <div class="mb-3" title="Select the ideal frame rate, if available, for streaming video source">
             <label for="framerate" class="form-label">
                 Frame rate <span *ngIf="selectedFrameRate">({{ selectedFrameRate }})</span><span *ngIf="!selectedFrameRate">(auto)</span>
             </label>
