@@ -2,7 +2,7 @@
     <div class="col">
         <div class="mb-3">
             <label for="size" class="form-label">Preferred resolution</label>
-            <select class="form-control" id="size" name="size" [(ngModel)]="selectedSize">
+            <select class="form-select" id="size" name="size" [(ngModel)]="selectedSize">
                 <option [ngValue]="null">Select size</option>
                 <optgroup *ngFor="let group of availableSizes" label="{{group.key}}">
                     <option *ngFor="let item of group.items" [ngValue]="item">{{ item | size }}</option>
