@@ -11,13 +11,16 @@ export class StreamerCompatibilityService implements CanActivate {
   constructor(private router: Router, private rtc: RtcService) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const supportedBrowser = this.isSupportedBrowser();
-    if (!supportedBrowser) {
-      // Breaking change on navigator.mediaDevices.enumerateDevices(),
-      // cannot load anymore the entire list even without asking permissions.
-      // See https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/69
-      this.router.navigate(['notsupported']);
-      return false;
+    const skipBrowserCheck = route.queryParams.sbc === '1';
+    if (!skipBrowserCheck) {
+      const supportedBrowser = this.isSupportedBrowser();
+      if (!supportedBrowser) {
+        // Breaking change on navigator.mediaDevices.enumerateDevices(),
+        // cannot load anymore the entire list even without asking permissions.
+        // See https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/69
+        this.router.navigate(['notsupported']);
+        return false;
+      }
     }
 
     const isWebRTCAvailable = this.rtc.isWebRTCAvailable();
