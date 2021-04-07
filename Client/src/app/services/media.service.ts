@@ -24,6 +24,20 @@ export class MediaService {
     return devices;
   }
 
+  disposeStream(stream: MediaStream, removeTracks: boolean) {
+    if (!stream) {
+      return;
+    }
+
+    stream.getTracks()
+      .forEach(track => {
+        track.stop();
+        if (removeTracks) {
+          stream.removeTrack(track);
+        }
+      });
+  }
+
   getDisplay(
     audioEnabled: boolean,
     frameRate?: number,
@@ -55,6 +69,36 @@ export class MediaService {
     const constraints = this.buildVideoConstraints(audioEnabled, deviceId, frameRate, idealSize);
 
     return navigator.mediaDevices.getUserMedia(constraints);
+  }
+
+  async tryGetMicrophonePermission(): Promise<boolean> {
+    try {
+      const devices = await this.getAvailableInputDevicesAsync(['videoinput']);
+      if (devices && devices.length > 0) {
+        return true;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      this.disposeStream(stream, true);
+      return true;
+    } catch (error: any) {
+      return false;
+    }
+  }
+
+  async tryGetWebcamPermission(): Promise<boolean> {
+    try {
+      const devices = await this.getAvailableInputDevicesAsync(['audioinput', 'audiooutput']);
+      if (devices && devices.length > 0) {
+        return true;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+      this.disposeStream(stream, true);
+      return true;
+    } catch (error: any) {
+      return false;
+    }
   }
 
   private buildVideoConstraints(

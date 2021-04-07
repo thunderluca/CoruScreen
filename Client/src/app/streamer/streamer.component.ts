@@ -32,6 +32,8 @@ export class StreamerComponent implements OnInit {
   private currentStream: MediaStream;
   private streamId: string;
   private eventsSubscription: Subscription = new Subscription();
+  private microphonePermissionGranted: boolean;
+  private webcamPermissionGranted: boolean;
 
   constructor(
     private deviceDetector: DeviceDetectorService,
@@ -40,6 +42,12 @@ export class StreamerComponent implements OnInit {
     private rng: RngService,
     private rtc: RtcService,
     private signaling: SignalingService) { }
+
+  async checkPermissionsAsync(): Promise<void> {
+    this.microphonePermissionGranted = (await this.media.getAvailableInputDevicesAsync(['audioinput'])).length > 0;
+
+    this.webcamPermissionGranted = (await this.media.getAvailableInputDevicesAsync(['videoinput'])).length > 0;
+  }
 
   chooseDeviceType(type: number): void {
     switch (type) {
@@ -121,6 +129,34 @@ export class StreamerComponent implements OnInit {
         this.rtc.getOrCreateSpectatorPeer(ids[ids.length - 1], this.currentStream);
       }
     }));
+
+    this.checkPermissionsAsync()
+      .then(() => {
+        if (this.microphonePermissionGranted && this.webcamPermissionGranted) {
+          return;
+        }
+
+        const devicePermissionToAsk = !this.microphonePermissionGranted && !this.webcamPermissionGranted 
+          ? 'microphone and webcam'
+          : !this.microphonePermissionGranted ? 'microphone' : 'webcam';
+
+        const result = confirm('CoruScreen need to check ' + devicePermissionToAsk + ' permissions to allow audio input devices to be used as streaming devices. Do you want to allow it?');
+        if (result) {
+          if (!this.microphonePermissionGranted) {
+            this.media.tryGetMicrophonePermission()
+              .then(microphonePermissionGranted => {
+                this.microphonePermissionGranted = microphonePermissionGranted;
+              });
+          }
+          
+          if (!this.webcamPermissionGranted) {
+            this.media.tryGetWebcamPermission()
+              .then(webcamPermissionGranted => {
+                this.webcamPermissionGranted = webcamPermissionGranted;
+              });
+          }
+        }
+      })
   }
 
   reset(): void {
@@ -183,12 +219,8 @@ export class StreamerComponent implements OnInit {
     this.signaling.endStreamAsync(this.streamId)
       .then(() => {
         this.stopPlayer();
-        
-        this.currentStream.getTracks()
-          .forEach(track => {
-            track.stop();
-            this.currentStream.removeTrack(track);
-          });
+
+        this.media.disposeStream(this.currentStream, true);
     
         this.currentStream = null;
     
