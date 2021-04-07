@@ -18,7 +18,7 @@ export class StreamerCompatibilityService implements CanActivate {
         // Breaking change on navigator.mediaDevices.enumerateDevices(),
         // cannot load anymore the entire list even without asking permissions.
         // See https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/69
-        this.router.navigate(['notsupported']);
+        this.router.navigate(['browsernotsupported']);
         return false;
       }
     }
@@ -40,13 +40,13 @@ export class StreamerCompatibilityService implements CanActivate {
 
     const platform = browser.getPlatformType(true);
 
-    const unsupportedSafariEdition = browserName === 'safari' && operatingSystem === 'ios' && (platform === 'mobile' || platform === 'tablet');
+    const unsupportedSafariEdition = operatingSystem === 'ios' && (platform === 'mobile' || platform === 'tablet');
     if (unsupportedSafariEdition) {
       // iOS/iPad Safari-based browsers cannot retrieve any device
       return false;
     }
 
-    const unsupportedFirefoxEdition = browserName === 'firefox' && platform === 'desktop' && browser.getBrowserVersion() >= '69';
+    const unsupportedFirefoxEdition = browserName === 'firefox' && browser.getBrowserVersion() >= '69';
     if (unsupportedFirefoxEdition) {
       // Breaking change on navigator.mediaDevices.enumerateDevices(),
       // cannot load anymore the entire list even without asking permissions.
