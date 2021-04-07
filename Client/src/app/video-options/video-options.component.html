@@ -8,10 +8,6 @@
                     <option *ngFor="let item of group.items" [ngValue]="item">{{ item | size }}</option>
                 </optgroup>
             </select>
-
-            <div *ngIf="selectedSize" class="form-text">
-                Selected size {{ selectedSize | size}}
-            </div>
         </div>
         <div [class]="useSecondaryAudioSource ? 'd-none' : 'mb-3 form-check form-switch'">
             <input type="checkbox" class="form-check-input" id="source-audio" name="source-audio" [(ngModel)]="useSourceAudio" />
