@@ -31,7 +31,19 @@ export class StreamerCompatibilityService implements CanActivate {
   private isSupportedBrowser(): boolean {
     const browser = Bowser.getParser(navigator.userAgent);
 
-    const unsupportedFirefoxEdition = browser.getBrowserName().toLowerCase() === 'firefox' && browser.getBrowserVersion() >= '69';
+    const operatingSystem = browser.getOSName(true);
+
+    const platform = browser.getPlatformType(true);
+
+    const unsupportedSafariEdition = operatingSystem === 'ios' && (platform === 'mobile' || platform === 'tablet');
+    if (unsupportedSafariEdition) {
+      // iOS/iPad Safari-based browsers cannot retrieve any device
+      return false;
+    }
+
+    const browserName = browser.getBrowserName(true);
+
+    const unsupportedFirefoxEdition = browserName === 'firefox' && platform === 'desktop' && browser.getBrowserVersion() >= '69';
     if (unsupportedFirefoxEdition) {
       // Breaking change on navigator.mediaDevices.enumerateDevices(),
       // cannot load anymore the entire list even without asking permissions.
