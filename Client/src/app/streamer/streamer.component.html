@@ -10,8 +10,8 @@
                     <div class="accordion-collapse collapse show" id="choice-collapse" aria-labelledby="choice-header" data-bs-parent="#setup-accordion">
                         <div class="accordion-body">
                             <button *ngIf="isDesktopDevice" type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(0)" title="Choose Screen to use your display, window or application as streaming video source">Screen</button>
-                            <button type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(1)" title="Choose Webcam to share a webcam as streaming video source">Webcam</button>
-                            <button type="button" class="btn btn-primary" (click)="chooseDeviceType(2)" title="Choose Microphone to use an audio input device as streaming source without video">Microphone</button>
+                            <button *ngIf="webcamPermission === 'granted'" type="button" class="btn btn-primary me-3" (click)="chooseDeviceType(1)" title="Choose Webcam to share a webcam as streaming video source">Webcam</button>
+                            <button *ngIf="microphonePermission === 'granted'" type="button" class="btn btn-primary" (click)="chooseDeviceType(2)" title="Choose Microphone to use an audio input device as streaming source without video">Microphone</button>
                         </div>
                     </div>
                 </div>

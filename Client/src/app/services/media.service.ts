@@ -71,32 +71,60 @@ export class MediaService {
     return navigator.mediaDevices.getUserMedia(constraints);
   }
 
-  async tryGetMicrophonePermission(): Promise<boolean> {
+  async queryMicrophonePermissionAsync(): Promise<PermissionState> {
+    const logPrefix = 'MediaService.queryMicrophonePermissionAsync - ';
+    
     try {
-      const devices = await this.getAvailableInputDevicesAsync(['videoinput']);
-      if (devices && devices.length > 0) {
-        return true;
+      if (!navigator.permissions || !navigator.permissions.query) {
+        return null;
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      this.disposeStream(stream, true);
+      const permissionStatus = await navigator.permissions.query({ name:'microphone' });
+      return permissionStatus.state;
+    } catch (error: any) {
+      this.log.error(logPrefix + error);
+      return null;
+    }
+  }
+
+  async queryWebcamPermissionAsync(): Promise<PermissionState> {
+    const logPrefix = 'MediaService.queryWebcamPermissionAsync - ';
+
+    try {
+      if (!navigator.permissions || !navigator.permissions.query) {
+        return null;
+      }
+
+      const permissionStatus = await navigator.permissions.query({ name:'camera' });
+      return permissionStatus.state;
+    } catch (error: any) {
+      this.log.error(logPrefix + error);
+      return null;
+    }
+  }
+
+  async requestMicrophonePermissionAsync(): Promise<boolean> {
+    const logPrefix = 'MediaService.requestMicrophonePermissionAsync - ';
+
+    try {
+      const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      this.disposeStream(tempStream, true);
       return true;
     } catch (error: any) {
+      this.log.error(logPrefix + error);
       return false;
     }
   }
 
-  async tryGetWebcamPermission(): Promise<boolean> {
-    try {
-      const devices = await this.getAvailableInputDevicesAsync(['audioinput', 'audiooutput']);
-      if (devices && devices.length > 0) {
-        return true;
-      }
+  async requestWebcamPermissionAsync(): Promise<boolean> {
+    const logPrefix = 'MediaService.requestWebcamPermissionAsync - ';
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
-      this.disposeStream(stream, true);
+    try {
+      const tempStream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+      this.disposeStream(tempStream, true);
       return true;
     } catch (error: any) {
+      this.log.error(logPrefix + error);
       return false;
     }
   }

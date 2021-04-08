@@ -1,17 +1,20 @@
 <app-top-nav-bar></app-top-nav-bar>
-<div class="p-3 text-center position-absolute top-50 start-50 translate-middle">
-    Your browser is not supported.
-    <br/>CoruScreen does not support the following browser:
-    <br/>
-    <ul>
-        <li>iOS / iPad Safari-based browsers</li>
-        <li>Firefox (Desktop and Android) from version 69</li>
-    </ul>
-    <hr/> This browsers are not supported due to:
-    <br/>
-    <ul>
-        <li>Security concerns that do not allow CoruScreen to retrieve device lists</li>
-        <li>Unreliable streaming experience, like continuos interruptions, background streaming not allowed, and so on.</li>
-    </ul>
-    <hr/> CoruScreen recommends to use a Chromium-based desktop browser to stream without this issues.
+<div class="row">
+    <div class="col mx-3 py-3">
+        <h3>Your browser is not supported.</h3>
+        <hr/>
+        <p>CoruScreen supports the following browsers:</p>
+        <ul>
+            <li class="mb-3" *ngFor="let br of browserRequirements">
+                {{ br.displayName }} - OS: {{ br.operatingSystems | operatingSystems }} (minimum version: {{ br.version }})
+            </li>
+        </ul>
+        <hr>
+        <p>Some browsers like iOS/iPadOS Safari-based browsers and Firefox desktop (since version 69) are not supported due to:</p>
+        <ul>
+            <li class="mb-3">Security concerns that do not allow CoruScreen to retrieve device lists</li>
+            <li class="mb-3">Unreliable streaming experience, like continuos interruptions, background streaming not allowed, and so on.</li>
+        </ul>
+        <p>For those reasons, CoruScreen recommends to use Chromium-based desktop browsers or Android browsers to stream without issues.</p>
+    </div>
 </div>

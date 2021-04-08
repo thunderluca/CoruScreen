@@ -23,17 +23,17 @@ export class StreamerComponent implements OnInit {
 
   advancedDeviceOptions: boolean;
   isDesktopDevice: boolean;
+  microphonePermission: PermissionState;
   streamingStarted: boolean;
   videoStreaming?: boolean = null;
   viewers: string[] = [];
   userMedia?: boolean = null;
+  webcamPermission: PermissionState;
 
   private currentPlayerType: string;
   private currentStream: MediaStream;
-  private streamId: string;
   private eventsSubscription: Subscription = new Subscription();
-  private microphonePermissionGranted: boolean;
-  private webcamPermissionGranted: boolean;
+  private streamId: string;
 
   constructor(
     private deviceDetector: DeviceDetectorService,
@@ -44,9 +44,9 @@ export class StreamerComponent implements OnInit {
     private signaling: SignalingService) { }
 
   async checkPermissionsAsync(): Promise<void> {
-    this.microphonePermissionGranted = (await this.media.getAvailableInputDevicesAsync(['audioinput'])).length > 0;
+    this.microphonePermission = await this.media.queryMicrophonePermissionAsync();
 
-    this.webcamPermissionGranted = (await this.media.getAvailableInputDevicesAsync(['videoinput'])).length > 0;
+    this.webcamPermission = await this.media.queryWebcamPermissionAsync();
   }
 
   chooseDeviceType(type: number): void {
@@ -132,27 +132,40 @@ export class StreamerComponent implements OnInit {
 
     this.checkPermissionsAsync()
       .then(() => {
-        if (this.microphonePermissionGranted && this.webcamPermissionGranted) {
+        const promptMicrophonePermission = this.microphonePermission === 'prompt';
+        const promptWebcamPermission = this.webcamPermission === 'prompt';
+
+        if (!promptMicrophonePermission && !promptWebcamPermission) {
           return;
         }
 
-        const devicePermissionToAsk = !this.microphonePermissionGranted && !this.webcamPermissionGranted 
+        const devicePermissionToAsk = promptMicrophonePermission && promptWebcamPermission
           ? 'microphone and webcam'
-          : !this.microphonePermissionGranted ? 'microphone' : 'webcam';
+          : promptMicrophonePermission ? 'microphone' : 'webcam';
 
         const result = confirm('CoruScreen need to check ' + devicePermissionToAsk + ' permissions to allow audio input devices to be used as streaming devices. Do you want to allow it?');
         if (result) {
-          if (!this.microphonePermissionGranted) {
-            this.media.tryGetMicrophonePermission()
-              .then(microphonePermissionGranted => {
-                this.microphonePermissionGranted = microphonePermissionGranted;
+          if (promptMicrophonePermission) {
+            this.media.requestMicrophonePermissionAsync()
+              .then(result => {
+                if (result) {
+                  this.media.queryMicrophonePermissionAsync()
+                    .then(permission => {
+                      this.microphonePermission = permission;
+                    });
+                }
               });
           }
           
-          if (!this.webcamPermissionGranted) {
-            this.media.tryGetWebcamPermission()
-              .then(webcamPermissionGranted => {
-                this.webcamPermissionGranted = webcamPermissionGranted;
+          if (promptWebcamPermission) {
+            this.media.requestWebcamPermissionAsync()
+              .then(result => {
+                if (result) {
+                  this.media.queryWebcamPermissionAsync()
+                    .then(permission => {
+                      this.webcamPermission = permission;
+                    });
+                }
               });
           }
         }
