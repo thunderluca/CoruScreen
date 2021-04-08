@@ -1,11 +1,17 @@
 <app-top-nav-bar></app-top-nav-bar>
 <div class="row">
-    <div class="col mx-3 py-3">
+    <div class="col-12 mx-3 py-3">
         <h3>WebRTC support not found</h3>
         <hr/>
         <p>
             Your browser seems to not support WebRTC technology, fundamental for CoruScreen.
             <br/> To see a list of compatible browser with WebRTC, <a href="https://caniuse.com/?search=webrtc" target="_blank" title="Navigate to 'Can I use? WebRTC' website">go to "Can I use?" website</a>.
         </p>
+    </div>
+    <div *ngIf="userAgent" class="col-12 mx-3 py-3">
+        <hr/>User agent: {{ userAgent }}
+        <br/>Browser: {{ browserName }} {{ browserVersion }}
+        <br/>Platform: {{ platform }}
+        <br/>OS: {{ operatingSystem }}
     </div>
 </div>

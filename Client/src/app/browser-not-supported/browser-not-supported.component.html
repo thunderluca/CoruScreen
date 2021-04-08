@@ -1,6 +1,6 @@
 <app-top-nav-bar></app-top-nav-bar>
 <div class="row">
-    <div class="col mx-3 py-3">
+    <div class="col-12 mx-3 py-3">
         <h3>Your browser is not supported.</h3>
         <hr/>
         <p>CoruScreen supports the following browsers:</p>
@@ -16,5 +16,11 @@
             <li class="mb-3">Unreliable streaming experience, like continuos interruptions, background streaming not allowed, and so on.</li>
         </ul>
         <p>For those reasons, CoruScreen recommends to use Chromium-based desktop browsers or Android browsers to stream without issues.</p>
+    </div>
+    <div *ngIf="userAgent" class="col-12 mx-3 py-3">
+        <hr/>User agent: {{ userAgent }}
+        <br/>Browser: {{ browserName }} {{ browserVersion }}
+        <br/>Platform: {{ platform }}
+        <br/>OS: {{ operatingSystem }}
     </div>
 </div>
