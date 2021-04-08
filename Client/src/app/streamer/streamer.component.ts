@@ -321,8 +321,10 @@ export class StreamerComponent implements OnInit {
     }
 
     player.srcObject = this.currentStream;
+    player.onloadedmetadata = () => {
+      player.play();
+    }
     document.getElementById('preview-div').appendChild(player);
-    player.play();
     
     this.log.debug(logPrefix + 'Player added');
   }

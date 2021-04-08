@@ -180,8 +180,11 @@ export class ViewerComponent implements OnInit {
     }
 
     player.srcObject = this.currentStream;
+    player.onloadedmetadata = () => {
+      player.play();
+    }
+
     document.getElementById('player-div').appendChild(player);
-    player.play();
 
     this.log.debug(logPrefix + 'Player added');
   }
