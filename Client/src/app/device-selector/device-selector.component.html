@@ -2,10 +2,13 @@
     <div class="col">
         <div class="mb-3">
             <label for="selected-device" class="form-label">Input device</label>
-            <select class="form-select" name="selected-device" [(ngModel)]="selectedDeviceId" (ngModelChange)="validate()">
-                <option [ngValue]="null">Select device</option>
-                <option *ngFor="let device of availableDevices" [value]="device.deviceId">{{ device.label }}</option>
-            </select>
+            <div class="input-group">
+                <select class="form-select" name="selected-device" [(ngModel)]="selectedDeviceId" (ngModelChange)="validate()">
+                    <option [ngValue]="null">Select device</option>
+                    <option *ngFor="let device of availableDevices" [value]="device.deviceId">{{ device.label }}</option>
+                </select>
+                <button type="button" class="btn btn-outline-secondary" (click)="refreshList()">Refresh list</button>
+            </div>
             <div class="text-danger" *ngIf="!validDeviceId">Choose a device</div>
         </div>
     </div>

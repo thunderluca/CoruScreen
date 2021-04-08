@@ -12,6 +12,8 @@ export class DeviceSelectorComponent implements OnInit {
   selectedDeviceId?: string = null;
   validDeviceId: boolean = true;
 
+  private selectedDeviceKinds: MediaDeviceKind[] = [];
+
   constructor(private log: LogService, private media: MediaService) { }
 
   ngOnInit(): void {
@@ -19,6 +21,10 @@ export class DeviceSelectorComponent implements OnInit {
 
   loadDeviceList(kinds: MediaDeviceKind[]): void {
     const logPrefix = 'DeviceSelectorComponent.loadDeviceList - ';
+
+    if (!this.selectedDeviceKinds || this.selectedDeviceKinds.length === 0) {
+      this.selectedDeviceKinds = kinds;
+    }
 
     this.media.getAvailableInputDevicesAsync(kinds)
       .then(devices => {
@@ -29,6 +35,10 @@ export class DeviceSelectorComponent implements OnInit {
       
         this.availableDevices = devices;
       });
+  }
+
+  refreshList(): void {
+    this.loadDeviceList(this.selectedDeviceKinds);
   }
 
   reset(): void {
