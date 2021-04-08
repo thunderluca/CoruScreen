@@ -1,5 +1,5 @@
 <form class="row">
-    <div class="col">
+    <div class="col-md-6">
         <div class="mb-3" title="Select the ideal resolution, if available, for streaming video source">
             <label for="size" class="form-label">Preferred resolution</label>
             <select class="form-select" id="size" name="size" [(ngModel)]="selectedSize">
@@ -21,7 +21,7 @@
             <app-device-selector></app-device-selector>
         </div>
     </div>
-    <div class="col">
+    <div class="col-md-6">
         <div class="mb-3" title="Select the ideal frame rate, if available, for streaming video source">
             <label for="framerate" class="form-label">
                 Frame rate <span *ngIf="selectedFrameRate">({{ selectedFrameRate }})</span><span *ngIf="!selectedFrameRate">(auto)</span>
