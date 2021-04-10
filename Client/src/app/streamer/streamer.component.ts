@@ -314,6 +314,7 @@ export class StreamerComponent implements OnInit {
     this.currentPlayerType = type;
     
     const player = document.createElement(type);
+    player.style.backgroundColor = '#000';
 
     if (useControls) {
       player.setAttribute('controls', '');

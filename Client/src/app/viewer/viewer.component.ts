@@ -168,6 +168,7 @@ export class ViewerComponent implements OnInit {
     this.currentPlayerType = type;
 
     const player = document.createElement(type);
+    player.style.backgroundColor = '#000';
 
     if (useControls) {
       player.setAttribute('controls', '');
@@ -177,6 +178,7 @@ export class ViewerComponent implements OnInit {
       player.setAttribute('class', 'position-absolute top-50 start-50 translate-middle');
     } else {
       player.style.width = '100%';
+      player.style.height = '100%';
     }
 
     player.srcObject = this.currentStream;
