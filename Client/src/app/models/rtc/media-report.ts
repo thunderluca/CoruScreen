@@ -10,7 +10,7 @@ export class MediaReport {
     this.reports = reports;
   }
 
-  find(key: string, filter?: { [key: string]: boolean | number | string; }): IReport[] {
+  find(key: string, filter?: { [key: string]: string; }): IReport[] {
     const result: IReport[] = [];
 
     this.reports.forEach(report => {
@@ -18,12 +18,7 @@ export class MediaReport {
        
       if (filter) {
         for (const filterKey in filter) {
-          if (filter[filterKey] === undefined) {
-            keyValueFound = report.has(filterKey);
-          } else {
-            keyValueFound = filter[filterKey] === report.get(filterKey);
-          }
-              
+          keyValueFound = filter[filterKey] === report.get(filterKey);              
           if (!keyValueFound) {
             break;
           }
@@ -42,7 +37,7 @@ export class MediaReport {
     return result;
   }
 
-  protected findNumberValue(key: string, condition?: { [key: string]: boolean | number | string; }): number {
+  protected findNumberValue(key: string, condition?: { [key: string]: string; }): number {
     const result = this.find(key, condition);
     if (result && result[0]) {
       return this.parse(result[0].value) as number;
@@ -52,14 +47,16 @@ export class MediaReport {
   }
 
   private parse(content: any): boolean | number | string {
-    if (typeof content === 'boolean') {
-      return content as boolean;
+    switch (typeof content) {
+      case 'boolean': {
+        return content as boolean;
+      }
+      case 'number': {
+        return content as number;
+      }
+      default: {
+        return content as string;
+      }
     }
-
-    if (typeof content === 'number') {
-      return content as number;
-    }
-
-    return content as string;
   }
 }
