@@ -100,7 +100,7 @@ export class ViewerComponent implements OnInit {
       if (this.signaling) {
         this.signaling.leaveAsync(this.streamId)
           .then(() => {
-            this.rtc.destroyPeers();
+            this.rtc.destroyPeers([]);
     
             this.signaling.stopAsync();
           })
@@ -206,7 +206,7 @@ export class ViewerComponent implements OnInit {
 
     this.currentStream = null;
 
-    this.rtc.destroyPeers();
+    this.rtc.destroyPeers([]);
 
     this.log.debug(logPrefix + 'Player stopped');
   }
