@@ -15,6 +15,7 @@ import { NotSupportedComponent } from './not-supported/not-supported.component';
 import { ShareStreamComponent } from './share-stream/share-stream.component';
 import { BrowserNotSupportedComponent } from './browser-not-supported/browser-not-supported.component';
 import { OperatingSystemsPipe } from './pipes/operating-systems.pipe';
+import { ByteSizePipe } from './pipes/byte-size.pipe';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { OperatingSystemsPipe } from './pipes/operating-systems.pipe';
     NotSupportedComponent,
     ShareStreamComponent,
     BrowserNotSupportedComponent,
-    OperatingSystemsPipe
+    OperatingSystemsPipe,
+    ByteSizePipe
   ],
   imports: [
     BrowserModule,
