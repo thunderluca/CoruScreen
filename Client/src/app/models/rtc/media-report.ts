@@ -1,3 +1,5 @@
+// based on https://github.com/poplark/peerconnection-stats
+
 import { IReport } from "./i-report";
 import { RtcReport } from "./rtc-report";
 

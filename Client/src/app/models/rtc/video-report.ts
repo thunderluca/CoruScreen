@@ -1,3 +1,5 @@
+// based on https://github.com/poplark/peerconnection-stats
+
 import { IMediaReport } from "./i-media-report";
 import { MediaReport } from "./media-report";
 
