@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import * as SimplePeer from 'simple-peer';
 import { Instance } from 'simple-peer';
+import { Connection } from '../models/connection';
+import { AudioReport } from '../models/rtc/audio-report';
+import { RtcReport } from '../models/rtc/rtc-report';
+import { VideoReport } from '../models/rtc/video-report';
 import { SignalingData } from '../models/signaling-data';
 import { LogService } from './log.service';
 import { SignalingService } from './signaling.service';
@@ -10,22 +14,28 @@ import { SignalingService } from './signaling.service';
   providedIn: 'root'
 })
 export class RtcService {
-  private connection: Instance;
-  private connections: Instance[] = [];
+  private connection: Connection;
+  private connections: Connection[] = [];
 
   private stream: Subject<SignalingData> = new Subject<SignalingData>();
   public stream$ = this.stream.asObservable();
 
   constructor(private log: LogService, private signaling: SignalingService) { }
 
-  destroyPeers(): void {
-    if (this.connections) {
-      this.connections.forEach(peer => peer.destroy());
+  destroyPeers(clientIds: string[]): void {
+    if (this.connections && clientIds) {
+      clientIds.forEach(clientId => {
+        const connection: Connection = this.connections[clientId];
+        if (connection) {
+          connection.peer.destroy();
+        }
+      })
+
       this.connections = [];
     }
 
     if (this.connection) {
-      this.connection.destroy();
+      this.connection.peer.destroy();
       this.connection = null;
     }
   }
@@ -33,13 +43,13 @@ export class RtcService {
   getOrCreateSpectatorPeer(clientId: string, stream: MediaStream): Instance {
     const logPrefix = 'RtcService.registerSpectatorPeer - ';
 
-    let peer: Instance = this.connections[clientId];
-    if (peer) {
+    const connection: Connection = this.connections[clientId];
+    if (connection) {
       this.log.debug('Already found an existing connection for id "' + clientId + '"');
-      return peer;
+      return connection.peer;
     }
 
-    peer = new SimplePeer({ initiator: true, stream: stream });
+    const peer = new SimplePeer({ initiator: true, stream: stream });
 
     peer.on('signal', (data: any) => {
       this.signaling.sendDataAsync(clientId, data)
@@ -67,9 +77,26 @@ export class RtcService {
       this.log.error('An error occured with peer that has signaling id ' + clientId + ': ' + JSON.stringify(error));
     });
 
-    this.connections[clientId] = peer;
+    this.connections[clientId] = new Connection(peer);
 
     return peer;
+  }
+
+  getTotalBitrate(clientIds: string[]): number {
+    if (!this.connections) {
+      return 0;
+    }
+
+    let bitrate = 0;
+
+    clientIds.forEach(clientId => {
+      const connection: Connection = this.connections[clientId];
+      if (connection) {
+        bitrate += connection.bitrate;
+      }
+    })
+
+    return bitrate;
   }
 
   isWebRTCAvailable(): boolean {
@@ -78,9 +105,9 @@ export class RtcService {
 
   removePeer(clientId: string) {
     if (this.connections && this.connections[clientId]) {
-      const peerToDestroy: Instance = this.connections[clientId];
-      if (peerToDestroy) {
-        peerToDestroy.destroy();
+      const connectionToDestroy: Connection = this.connections[clientId];
+      if (connectionToDestroy) {
+        connectionToDestroy.peer.destroy();
 
         delete this.connections[clientId];
       }
@@ -101,16 +128,52 @@ export class RtcService {
     peer.signal(data);
   }
 
+  async updateConnectionBitrate(clientId: string): Promise<void> {
+    const logPrefix = 'RtcService.getPeerBytesSentAsync - ';
+
+    if (!this.connections || !this.connections[clientId]) {
+      return null;
+    }
+
+    const connection: Connection = this.connections[clientId];
+    if ('_pc' in connection.peer) {
+      const nativeClient = connection.peer['_pc'] as RTCPeerConnection;
+
+      try {
+        const statReports = await nativeClient.getStats();
+
+        const reports = RtcReport.Parse(statReports);
+  
+        const audioReports = new AudioReport(reports);
+        const videoReports = new VideoReport(reports);
+  
+        let bytesSent = 0;
+  
+        if (audioReports) {
+          bytesSent += audioReports.bytesSent;
+        }
+  
+        if (videoReports) {
+          bytesSent += videoReports.bytesSent;
+        }
+
+        connection.updateBytesSent(bytesSent);
+      } catch (error: any) {
+        this.log.error(logPrefix + error);
+      }     
+    }
+  }
+
   private getOrCreateStreamerPeer(clientId: string): Instance {
     const logPrefix = 'RtcService.registerStreamerPeer - ';
 
-    let peer: Instance = this.connection;
-    if (peer) {
+    const connection: Connection = this.connection;
+    if (connection) {
       this.log.debug('Already found an existing connection for id "' + clientId + '"');
-      return peer;
+      return connection.peer;
     }
 
-    peer = new SimplePeer();
+    const peer = new SimplePeer();
 
     peer.on('signal', (data: any) => {
       this.signaling.sendDataAsync(clientId, data)
@@ -142,7 +205,7 @@ export class RtcService {
       this.stream.next({ clientId, data: stream });
     });
 
-    this.connection = peer;
+    this.connection = new Connection(peer);
 
     return peer;
   }
