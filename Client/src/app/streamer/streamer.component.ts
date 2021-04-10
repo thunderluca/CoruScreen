@@ -22,6 +22,7 @@ export class StreamerComponent implements OnInit {
   @ViewChild(ShareStreamComponent) shareStream: ShareStreamComponent;
 
   advancedDeviceOptions: boolean;
+  currentTotalBitrate: number;
   isDesktopDevice: boolean;
   microphonePermission: PermissionState;
   streamingStarted: boolean;
@@ -30,6 +31,7 @@ export class StreamerComponent implements OnInit {
   userMedia?: boolean = null;
   webcamPermission: PermissionState;
 
+  private bitrateInterval: NodeJS.Timeout;
   private currentPlayerType: string;
   private currentStream: MediaStream;
   private eventsSubscription: Subscription = new Subscription();
@@ -237,7 +239,7 @@ export class StreamerComponent implements OnInit {
     
         this.currentStream = null;
     
-        this.rtc.destroyPeers();
+        this.rtc.destroyPeers(this.viewers);
         
         this.shareStream.resetUrl();
     
@@ -289,6 +291,7 @@ export class StreamerComponent implements OnInit {
 
   private resetOptions(): void {
     this.advancedDeviceOptions = false;
+    this.currentTotalBitrate = 0;
     this.videoStreaming = null;
     this.userMedia = null;
     
@@ -327,6 +330,19 @@ export class StreamerComponent implements OnInit {
     document.getElementById('preview-div').appendChild(player);
     
     this.log.debug(logPrefix + 'Player added');
+
+    this.bitrateInterval = setInterval(() => {
+      if (!this.viewers || this.viewers.length === 0) {
+        this.currentTotalBitrate = 0;
+      } else {
+        this.viewers.forEach(clientId => {
+          this.rtc.updateConnectionBitrate(clientId)
+            .then(() => {
+              this.currentTotalBitrate = this.rtc.getTotalBitrate(this.viewers);
+            });
+        });
+      }
+    }, 2000);
   }
 
   private stopPlayer(): void {
@@ -339,5 +355,7 @@ export class StreamerComponent implements OnInit {
     player.parentElement.removeChild(player);
     
     this.log.debug(logPrefix + 'Player stopped');
+
+    clearTimeout(this.bitrateInterval);
   }
 }
