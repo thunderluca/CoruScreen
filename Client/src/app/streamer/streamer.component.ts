@@ -342,7 +342,7 @@ export class StreamerComponent implements OnInit {
             });
         });
       }
-    }, 2000);
+    }, 1000);
   }
 
   private stopPlayer(): void {
