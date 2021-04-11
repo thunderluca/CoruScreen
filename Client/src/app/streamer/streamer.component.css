@@ -6,6 +6,10 @@
     content: 'Confirm options';
 }
 
+#preview-div>.card-img-overlay {
+    height: min-content;
+}
+
 #preview-div>.card-img-overlay>.card-title {
     background-color: #dc3545;
     border-radius: .25rem;
