@@ -5,3 +5,15 @@
 #confirm-config-btn:not(.default-opt):after {
     content: 'Confirm options';
 }
+
+#preview-div>.card-img-overlay>.card-title {
+    background-color: #dc3545;
+    border-radius: .25rem;
+    display: inline-block;
+    padding: .5rem;
+}
+
+#preview-div>.card-img-overlay:hover {
+    opacity: .1;
+    transition: opacity .5s;
+}

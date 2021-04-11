@@ -327,7 +327,7 @@ export class StreamerComponent implements OnInit {
     player.onloadedmetadata = () => {
       player.play();
     }
-    document.getElementById('preview-div').appendChild(player);
+    document.getElementById('preview-div').prepend(player);
     
     this.log.debug(logPrefix + 'Player added');
 

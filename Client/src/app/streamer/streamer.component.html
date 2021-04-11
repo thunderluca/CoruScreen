@@ -71,10 +71,13 @@
             </div>
         </div>
 
-        <div class="row py-3 px-1">
+        <div class="row py-3">
             <div class="col-md-12">
-                <h4 *ngIf="streamingStarted">Live preview</h4>
-                <div id="preview-div"></div>
+                <div id="preview-div" [class]="streamingStarted ? 'card bg-dark text-white' : 'd-none'">
+                    <div class="card-img-overlay">
+                        <h5 *ngIf="streamingStarted" class="card-title">Live preview</h5>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
