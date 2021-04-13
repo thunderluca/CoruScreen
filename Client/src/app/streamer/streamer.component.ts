@@ -236,6 +236,8 @@ export class StreamerComponent implements OnInit {
 
     this.signaling.endStreamAsync(this.streamId)
       .then(() => {
+        this.streamStats.stop();
+
         this.stopPlayer();
 
         this.media.disposeStream(this.currentStream, true);
@@ -282,6 +284,8 @@ export class StreamerComponent implements OnInit {
     this.streamingStarted = true;
 
     this.startPlayer(this.videoStreaming ? 'video' : 'audio', true);
+    
+    this.streamStats.start();
 
     this.log.debug(logPrefix + 'Streaming started successfully');
 
@@ -337,8 +341,6 @@ export class StreamerComponent implements OnInit {
     document.getElementById('preview-div').prepend(player);
     
     this.log.debug(logPrefix + 'Player added');
-
-    this.streamStats.start();
   }
 
   private stopPlayer(): void {
@@ -351,7 +353,5 @@ export class StreamerComponent implements OnInit {
     player.parentElement.removeChild(player);
     
     this.log.debug(logPrefix + 'Player stopped');
-
-    this.streamStats.stop();
   }
 }
