@@ -1,20 +1,41 @@
 import { Instance } from "simple-peer";
 
 export class Connection {
+  public audioBitrate: number = 0;
+  public audioBytesSent: number = 0;
+  public id: string;
   public peer: Instance;
-  public bitrate: number = 0;
-  public bytesSent: number = -1;
+  public videoBitrate: number = 0;
+  public videoBytesSent: number = 0;
 
-  constructor(peer: Instance) {
+  public get totalBitrate(): number {
+    return this.audioBitrate + this.videoBitrate;
+  }
+
+  public get totalBytesSent(): number {
+    return this.audioBytesSent + this.videoBytesSent;
+  }
+
+  constructor(id: string, peer: Instance) {
+    this.id = id;
     this.peer = peer;
   }
 
-  updateBytesSent(newValue: number) {
-    if (this.bytesSent === -1) {
-      this.bitrate = newValue;
+  updateAudioBytesSent(newValue: number): void {
+    if (this.audioBytesSent === 0) {
+      this.audioBitrate = newValue;
     } else {
-      this.bitrate = newValue - this.bytesSent;
+      this.audioBitrate = newValue - this.audioBytesSent;
     }    
-    this.bytesSent = newValue;
+    this.audioBytesSent = newValue;
+  }
+
+  updateVideoBytesSent(newValue: number): void {
+    if (this.videoBytesSent === 0) {
+      this.videoBitrate = newValue;
+    } else {
+      this.videoBitrate = newValue - this.videoBytesSent;
+    }    
+    this.videoBytesSent = newValue;
   }
 }

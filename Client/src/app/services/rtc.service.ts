@@ -40,6 +40,14 @@ export class RtcService {
     }
   }
 
+  getConnection(clientId: string): Connection {
+    if (!this.connections) {
+      return null;
+    }
+    
+    return this.connections[clientId];
+  }
+
   getOrCreateSpectatorPeer(clientId: string, stream: MediaStream): Instance {
     const logPrefix = 'RtcService.registerSpectatorPeer - ';
 
@@ -77,7 +85,7 @@ export class RtcService {
       this.log.error('An error occured with peer that has signaling id ' + clientId + ': ' + JSON.stringify(error));
     });
 
-    this.connections[clientId] = new Connection(peer);
+    this.connections[clientId] = new Connection(clientId, peer);
 
     return peer;
   }
@@ -92,7 +100,7 @@ export class RtcService {
     clientIds.forEach(clientId => {
       const connection: Connection = this.connections[clientId];
       if (connection) {
-        bitrate += connection.bitrate;
+        bitrate += connection.totalBitrate;
       }
     })
 
@@ -147,17 +155,13 @@ export class RtcService {
         const audioReports = new AudioReport(reports);
         const videoReports = new VideoReport(reports);
   
-        let bytesSent = 0;
-  
         if (audioReports) {
-          bytesSent += audioReports.bytesSent;
+          connection.updateAudioBytesSent(audioReports.bytesSent);
         }
   
         if (videoReports) {
-          bytesSent += videoReports.bytesSent;
+          connection.updateVideoBytesSent(videoReports.bytesSent);
         }
-
-        connection.updateBytesSent(bytesSent);
       } catch (error: any) {
         this.log.error(logPrefix + error);
       }     
@@ -205,7 +209,7 @@ export class RtcService {
       this.stream.next({ clientId, data: stream });
     });
 
-    this.connection = new Connection(peer);
+    this.connection = new Connection(clientId, peer);
 
     return peer;
   }
