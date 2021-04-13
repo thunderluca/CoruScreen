@@ -55,13 +55,14 @@
                             <div *ngIf="deviceTypeChosen()">
                                 <div class="row">
                                     <div class="col-md-3 col-sm-12 mb-3">
-                                        <button *ngIf="!streamingStarted" type="button" class="btn btn-primary me-3" (click)="startStream()" title="Start your stream">Start stream</button>
+                                        <button *ngIf="!streamingStarted" type="button" class="btn btn-success me-3" (click)="startStream()" title="Start your stream">Start stream</button>
                                         <button *ngIf="streamingStarted" type="button" class="btn btn-danger me-3" (click)="stopStream()" title="Stop your stream and notify all your viewers">Stop stream</button>
-                                        <span *ngIf="viewers.length > 0" class="me-3">Viewers: {{ viewers.length }}</span>
-                                        <span *ngIf="currentTotalBitrate > 0">Bitrate: {{ currentTotalBitrate | byteSize}}</span>
                                     </div>
                                     <div class="col-md-9 col-sm-12">
                                         <app-share-stream></app-share-stream>
+                                    </div>
+                                    <div [class]="streamingStarted ? 'col-12' : 'd-none'">
+                                        <app-stream-stats></app-stream-stats>
                                     </div>
                                 </div>
                             </div>

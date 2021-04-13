@@ -9,6 +9,7 @@ import { RngService } from '../services/rng.service';
 import { RtcService } from '../services/rtc.service';
 import { SignalingService } from '../services/signaling.service';
 import { ShareStreamComponent } from '../share-stream/share-stream.component';
+import { StreamStatsComponent } from '../stream-stats/stream-stats.component';
 import { VideoOptionsComponent } from '../video-options/video-options.component';
 
 @Component({
@@ -17,12 +18,12 @@ import { VideoOptionsComponent } from '../video-options/video-options.component'
   styleUrls: ['./streamer.component.css']
 })
 export class StreamerComponent implements OnInit {
-  @ViewChild(VideoOptionsComponent) videoOptions: VideoOptionsComponent;
   @ViewChild(DeviceSelectorComponent) deviceSelector: DeviceSelectorComponent;
   @ViewChild(ShareStreamComponent) shareStream: ShareStreamComponent;
+  @ViewChild(StreamStatsComponent) streamStats: StreamStatsComponent;
+  @ViewChild(VideoOptionsComponent) videoOptions: VideoOptionsComponent;
 
   advancedDeviceOptions: boolean;
-  currentTotalBitrate: number;
   isDesktopDevice: boolean;
   microphonePermission: PermissionState;
   streamingStarted: boolean;
@@ -31,7 +32,6 @@ export class StreamerComponent implements OnInit {
   userMedia?: boolean = null;
   webcamPermission: PermissionState;
 
-  private bitrateInterval: NodeJS.Timeout;
   private currentPlayerType: string;
   private currentStream: MediaStream;
   private eventsSubscription: Subscription = new Subscription();
@@ -123,6 +123,9 @@ export class StreamerComponent implements OnInit {
     this.eventsSubscription.add(this.signaling.viewers$.subscribe((ids: string[]) => {
       const userLeaved = this.viewers.length > ids.length;
       this.viewers = ids;
+      if (this.streamStats) {
+        this.streamStats.viewers = ids;
+      }
       if (userLeaved) {
         this.viewers
           .filter(vid => ids.indexOf(vid) === -1)
@@ -291,12 +294,15 @@ export class StreamerComponent implements OnInit {
 
   private resetOptions(): void {
     this.advancedDeviceOptions = false;
-    this.currentTotalBitrate = 0;
     this.videoStreaming = null;
     this.userMedia = null;
     
     if (this.deviceSelector) {
       this.deviceSelector.reset();
+    }
+
+    if (this.streamStats) {
+      this.streamStats.reset(false);
     }
     
     if (this.videoOptions) {
@@ -332,18 +338,7 @@ export class StreamerComponent implements OnInit {
     
     this.log.debug(logPrefix + 'Player added');
 
-    this.bitrateInterval = setInterval(() => {
-      if (!this.viewers || this.viewers.length === 0) {
-        this.currentTotalBitrate = 0;
-      } else {
-        this.viewers.forEach(clientId => {
-          this.rtc.updateConnectionBitrate(clientId)
-            .then(() => {
-              this.currentTotalBitrate = this.rtc.getTotalBitrate(this.viewers);
-            });
-        });
-      }
-    }, 1000);
+    this.streamStats.start();
   }
 
   private stopPlayer(): void {
@@ -357,6 +352,6 @@ export class StreamerComponent implements OnInit {
     
     this.log.debug(logPrefix + 'Player stopped');
 
-    clearTimeout(this.bitrateInterval);
+    this.streamStats.stop();
   }
 }
