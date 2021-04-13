@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col-md-4 col-sm-6">
+        <span *ngIf="viewers && viewers.length > 0" class="me-3">Viewers: {{ viewers.length }}</span>
+    </div>
+    <div class="col-md-4 col-sm-6">
+        <span *ngIf="currentTotalBitrate > 0">Bitrate: {{ currentTotalBitrate | byteSize}}</span>
+    </div>
+    <div class="col-md-4 col-sm-12">
+        <button type="button" class="btn btn-primary float-md-end" data-bs-toggle="collapse" data-bs-target="#peer-details-div">Show details</button>
+    </div>
+    <div class="col-12 collapse" id="peer-details-div">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Viewer Id</th>
+                    <th scope="col">Audio bitrate</th>
+                    <th scope="col">Video bitrate</th>
+                    <th scope="col">Total bitrate</th>
+                    <th scope="col">Total bytes sent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let connection of connections">
+                    <td>{{ connection.id }}</td>
+                    <td>{{ connection.audioBitrate | byteSize }}</td>
+                    <td>{{ connection.videoBitrate | byteSize }}</td>
+                    <td>{{ connection.totalBitrate | byteSize }}</td>
+                    <td>{{ connection.totalBytesSent | fullByteSize }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
