@@ -36,6 +36,7 @@ export class StreamerComponent implements OnInit {
   private currentStream: MediaStream;
   private eventsSubscription: Subscription = new Subscription();
   private streamId: string;
+  private streamManuallyStopped: boolean = false;
 
   constructor(
     private deviceDetector: DeviceDetectorService,
@@ -234,6 +235,8 @@ export class StreamerComponent implements OnInit {
       }
     }
 
+    this.streamManuallyStopped = true;
+
     this.signaling.endStreamAsync(this.streamId)
       .then(() => {
         this.streamStats.stop();
@@ -253,6 +256,8 @@ export class StreamerComponent implements OnInit {
         this.resetOptions();
 
         document.getElementById('choice-header').querySelector('button').click();
+
+        this.streamManuallyStopped = false;
       })
       .catch((err: any) => {
         this.log.error(logPrefix + err);
@@ -269,6 +274,9 @@ export class StreamerComponent implements OnInit {
 
   private async manageStream(logPrefix: string, stream: MediaStream): Promise<void> {
     this.currentStream = stream;
+    this.currentStream.getTracks().forEach(track => {
+      track.onended = () => this.onTrackEnded(track);
+    });
 
     if (this.videoOptions.useSecondaryAudioSource) {
       const secondaryAudioDeviceStream: MediaStream = await this.media.getAudioDevice(this.videoOptions.deviceSelector.selectedDeviceId);
@@ -293,6 +301,19 @@ export class StreamerComponent implements OnInit {
       this.viewers.forEach(id => {
         this.rtc.getOrCreateSpectatorPeer(id, this.currentStream);
       });
+    }
+  }
+
+  private onTrackEnded(track: MediaStreamTrack): void {
+    if (!this.currentStream || this.streamManuallyStopped) {
+      return;
+    }
+
+    this.currentStream.removeTrack(track);
+
+    const tracks = this.currentStream.getTracks();
+    if (!tracks || tracks.length === 0) {
+      this.stopStream(true);
     }
   }
 
