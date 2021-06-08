@@ -59,7 +59,7 @@ export class RtcService {
 
     const peer = new SimplePeer({ initiator: true, stream: stream });
 
-    peer.on('signal', (data: any) => {
+    peer.on('signal', (data: SimplePeer.SignalData) => {
       this.signaling.sendDataAsync(clientId, data)
         .then(result => {
           if (result) {
@@ -179,7 +179,7 @@ export class RtcService {
 
     const peer = new SimplePeer();
 
-    peer.on('signal', (data: any) => {
+    peer.on('signal', (data: SimplePeer.SignalData) => {
       this.signaling.sendDataAsync(clientId, data)
         .then(result => {
           if (result) {
@@ -205,7 +205,7 @@ export class RtcService {
       this.log.error('An error occured with peer that has signaling id ' + clientId + ': ' + JSON.stringify(error));
     });
 
-    peer.on('stream', (stream: any) => {
+    peer.on('stream', (stream: MediaStream) => {
       this.stream.next({ clientId, data: stream });
     });
 
