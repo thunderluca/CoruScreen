@@ -7,4 +7,5 @@
         Seems that current stream has ended or became unreachable. Try to wait and see if stream comes back live.
         <br/> Otherwise <a routerLink="/" title="Home">you can start your own stream!</a>
     </div>
+    <div *ngIf="currentTranscription" class="p-1 mb-5 position-absolute bottom-0 start-50 translate-middle-x bg-dark text-white">{{ currentTranscription }}</div>
 </main>

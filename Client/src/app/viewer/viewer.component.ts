@@ -15,8 +15,10 @@ const CONNECTION_MAX_TIMEOUT_IN_SECONDS: number = 20;
   styleUrls: ['./viewer.component.css']
 })
 export class ViewerComponent implements OnInit {
+  currentTranscription: string;
   hideStatusMessages: boolean = false;
   streamStatus: StreamStatus = StreamStatus.Buffering;
+  transcriptions: string[] = [];
   useDarkTheme: boolean = false;
 
   private connectionTickCounter: number;
@@ -53,6 +55,15 @@ export class ViewerComponent implements OnInit {
             const signal = args[1] as string;
 
             this.rtc.signalPeer(false, clientId, signal);
+          });
+
+          this.signaling.registerCallback('transcriptionReceived', (args: any[]) => {      
+            const transcription = args[0] as string;
+
+            if (transcription !== undefined && transcription !== null && transcription.trim() !== '')
+              this.transcriptions.push(transcription);
+
+            this.currentTranscription = this.transcriptions.join(' ');
           });
 
           this.eventsSubscription.add(this.rtc.stream$.subscribe((signal: SignalingData) => {
@@ -168,7 +179,6 @@ export class ViewerComponent implements OnInit {
     this.currentPlayerType = type;
 
     const player = document.createElement(type);
-    player.style.backgroundColor = '#000';
 
     if (useControls) {
       player.setAttribute('controls', '');
@@ -177,6 +187,7 @@ export class ViewerComponent implements OnInit {
     if (type === 'audio') {
       player.setAttribute('class', 'position-absolute top-50 start-50 translate-middle');
     } else {
+      player.style.backgroundColor = '#000';
       player.style.width = '100%';
       player.style.height = '100%';
     }
