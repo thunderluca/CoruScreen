@@ -30,7 +30,7 @@
                             "node_modules/bootstrap/dist/css/bootstrap.min.css"
                         ],
                         "scripts": [
-                            "src/assets/js/speechService.js",
+                            "src/assets/js/speechService.min.js",
                             "node_modules/@popperjs/core/dist/umd/popper.min.js",
                             "node_modules/bootstrap/dist/js/bootstrap.min.js"
                         ],
