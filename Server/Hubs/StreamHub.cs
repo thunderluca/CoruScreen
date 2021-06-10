@@ -70,5 +70,10 @@ namespace CoruScreen.Server.Hubs
 
             _logger.LogInformation($"Signal sent from {Context.ConnectionId} to {clientId}");
         }
+
+        public Task SendTranscription(string id, string text)
+        {
+            return Clients.GroupExcept(id, Context.ConnectionId).SendAsync("TranscriptionReceived", text);
+        }
     }
 }
