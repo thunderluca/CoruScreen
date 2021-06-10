@@ -18,6 +18,7 @@ import { OperatingSystemsPipe } from './pipes/operating-systems.pipe';
 import { ByteSizePipe } from './pipes/byte-size.pipe';
 import { StreamStatsComponent } from './stream-stats/stream-stats.component';
 import { FullByteSizePipe } from './pipes/full-byte-size.pipe';
+import { SpeechOptionsComponent } from './speech-options/speech-options.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { FullByteSizePipe } from './pipes/full-byte-size.pipe';
     OperatingSystemsPipe,
     ByteSizePipe,
     StreamStatsComponent,
-    FullByteSizePipe
+    FullByteSizePipe,
+    SpeechOptionsComponent
   ],
   imports: [
     BrowserModule,
