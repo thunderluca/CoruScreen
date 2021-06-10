@@ -122,6 +122,20 @@ export class SignalingService {
     }
   }
 
+  async sendTranscription(id: string, text: string): Promise<boolean> {
+    const logPrefix = 'SignalingService.sendTranscription - ';
+
+    try {
+      await this.connection.invoke('sendTranscription', id, text);
+
+      return true;
+    } catch (error: any) {
+      this.log.error(logPrefix + error);
+
+      return false;
+    }
+  }
+
   async startAsync(): Promise<boolean> {
     const logPrefix = 'SignalingService.startAsync - ';
 
