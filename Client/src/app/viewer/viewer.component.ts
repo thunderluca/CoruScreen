@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SignalingData } from '../models/signaling-data';
+import { SpeechTranscription } from '../models/speech/speech-transcription';
 import { StreamStatus } from '../models/stream-status';
-import { TranscribedSpeech } from '../models/transcribed-speech';
 import { LogService } from '../services/log.service';
 import { RtcService } from '../services/rtc.service';
 import { SignalingService } from '../services/signaling.service';
@@ -19,7 +19,7 @@ export class ViewerComponent implements OnInit {
   currentTranscription: string;
   hideStatusMessages: boolean = false;
   streamStatus: StreamStatus = StreamStatus.Buffering;
-  transcriptions: TranscribedSpeech[] = [];
+  transcriptions: SpeechTranscription[] = [];
   useDarkTheme: boolean = false;
 
   private connectionTickCounter: number;
