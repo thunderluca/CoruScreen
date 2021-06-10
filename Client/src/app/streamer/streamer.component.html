@@ -37,6 +37,20 @@
                                     <div [class]="videoStreaming && advancedDeviceOptions ? 'col-md-6' : 'col-md-6 d-none'">
                                         <app-video-options></app-video-options>
                                     </div>
+                                    <div [class]="!videoStreaming && userMedia && advancedDeviceOptions ? 'col-md-12' : 'col-md-12 d-none'" title="Enable Speech-To-Text feature to transcribe audio input source using selected language">
+                                        <div class="form-check form-switch">
+                                            <input type="checkbox" class="form-check-input" id="speech-to-text" name="speech-to-text" [(ngModel)]="enableSpeechToText" />
+                                            <label class="form-check-label" for="speech-to-text">Enable speech to text</label>
+                                        </div>
+                                    </div>
+                                    <div [class]="enableSpeechToText ? 'col-md-12 mt-1' : 'col-md-12 d-none'" title="Choose language for Speech-To-Text functionality">
+                                        <label for="speech-language" class="form-label">Speech-To-Text language</label>
+                                        <select class="form-select" name="speech-language" [(ngModel)]="speechLanguage" (ngModelChange)="speechLanguageValidate()">
+                                            <option [ngValue]="null">Select language</option>
+                                            <option *ngFor="let language of availableSpeechLanguages" [value]="language.code">{{ language.name }}</option>
+                                        </select>
+                                        <div class="text-danger" *ngIf="!validSpeechLanguage">Choose a language</div>
+                                    </div>
                                 </div>
                                 <div>
                                     <button type="button" [class]="advancedDeviceOptions ? 'btn btn-primary' : 'btn btn-primary default-opt'" id="confirm-config-btn" (click)="validateOptions()" title="Confirm your selection of streaming device options"></button>
@@ -74,8 +88,8 @@
 
         <div class="row py-3">
             <div class="col-md-12">
-                <div id="preview-div" [class]="streamingStarted ? 'card bg-dark text-white' : 'd-none'">
-                    <div class="card-img-overlay">
+                <div id="preview-div" [class]="!streamingStarted ? 'd-none' : (!userMedia ? 'card bg-dark text-white' : '')">
+                    <div *ngIf="!userMedia" class="card-img-overlay">
                         <h5 *ngIf="streamingStarted" class="card-title">Live preview</h5>
                     </div>
                 </div>

@@ -3,6 +3,9 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 import { Subscription } from 'rxjs';
 import { DeviceSelectorComponent } from '../device-selector/device-selector.component';
 import { Size } from '../models/size';
+import { SpeechConfiguration } from '../models/speech-configuration';
+import { TranscribedSpeech } from '../models/transcribed-speech';
+import { ConfigurationService } from '../services/configuration.service';
 import { LogService } from '../services/log.service';
 import { MediaService } from '../services/media.service';
 import { RngService } from '../services/rng.service';
@@ -11,6 +14,8 @@ import { SignalingService } from '../services/signaling.service';
 import { ShareStreamComponent } from '../share-stream/share-stream.component';
 import { StreamStatsComponent } from '../stream-stats/stream-stats.component';
 import { VideoOptionsComponent } from '../video-options/video-options.component';
+
+declare const speechService: any;
 
 @Component({
   selector: 'app-streamer',
@@ -24,12 +29,17 @@ export class StreamerComponent implements OnInit {
   @ViewChild(VideoOptionsComponent) videoOptions: VideoOptionsComponent;
 
   advancedDeviceOptions: boolean;
+  availableSpeechLanguages: any[] = speechService.supportedLanguages;
+  enableSpeechToText: boolean;
   isDesktopDevice: boolean;
   microphonePermission: PermissionState;
+  speechLanguage: string = null;
   streamingStarted: boolean;
+  transcriptions: TranscribedSpeech[] = [];
+  userMedia?: boolean = null;
+  validSpeechLanguage: boolean = true;
   videoStreaming?: boolean = null;
   viewers: string[] = [];
-  userMedia?: boolean = null;
   webcamPermission: PermissionState;
 
   private currentPlayerType: string;
@@ -37,8 +47,10 @@ export class StreamerComponent implements OnInit {
   private eventsSubscription: Subscription = new Subscription();
   private streamId: string;
   private streamManuallyStopped: boolean = false;
+  private transcriptionsTimeout: NodeJS.Timeout;
 
   constructor(
+    private configuration: ConfigurationService,
     private deviceDetector: DeviceDetectorService,
     private log: LogService,
     private media: MediaService,
@@ -191,6 +203,12 @@ export class StreamerComponent implements OnInit {
     }
   }
 
+  speechLanguageValidate(): boolean {
+    this.validSpeechLanguage = this.speechLanguage !== undefined && this.speechLanguage !== null && this.speechLanguage.trim() !== '';
+  
+    return this.validSpeechLanguage;
+  }
+
   startStream(): void {
     const logPrefix = 'StreamerComponent.startStream - ';
 
@@ -239,6 +257,16 @@ export class StreamerComponent implements OnInit {
 
     this.signaling.endStreamAsync(this.streamId)
       .then(() => {
+
+        if (this.enableSpeechToText || this.videoOptions.enableSpeechToText) {
+          if (this.transcriptionsTimeout) {
+            clearInterval(this.transcriptionsTimeout);
+            this.transcriptionsTimeout = null;
+          }
+
+          speechService.stopTranslate();
+        }
+
         this.streamStats.stop();
 
         this.stopPlayer();
@@ -265,7 +293,17 @@ export class StreamerComponent implements OnInit {
   }
 
   validateOptions(): void {
-    if (this.userMedia && !this.deviceSelector.validate()) {
+    let inputDeviceNotSelected = false;
+    if ((this.userMedia && !this.deviceSelector.validate()) || (this.videoOptions.useSecondaryAudioSource && !this.videoOptions.deviceSelector.validate())) {
+      inputDeviceNotSelected = true;
+    }
+
+    let speechLanguageNotSelected = false;
+    if (this.enableSpeechToText || this.videoOptions.enableSpeechToText) {
+      speechLanguageNotSelected = this.enableSpeechToText ? !this.speechLanguageValidate() : !this.videoOptions.speechLanguageValidate();
+    }
+
+    if (inputDeviceNotSelected || speechLanguageNotSelected) {
       return;
     }
 
@@ -285,6 +323,31 @@ export class StreamerComponent implements OnInit {
           this.currentStream.addTrack(track);
         });
       }
+    }
+
+    if (this.advancedDeviceOptions && (this.enableSpeechToText || this.videoOptions.enableSpeechToText)) {
+      const speechConfiguration = this.configuration.get<SpeechConfiguration>('stt');
+
+      speechConfiguration.deviceId = this.userMedia ? this.deviceSelector.selectedDeviceId : this.videoOptions.deviceSelector.selectedDeviceId;
+      speechConfiguration.isDebugMode = this.configuration.get('debug') as boolean;
+      speechConfiguration.language = this.speechLanguage ?? this.videoOptions.speechLanguage;
+
+      speechService.startTranslate(speechConfiguration);
+
+      this.transcriptionsTimeout = setInterval(() => {
+        if (this.transcriptions.length > 0) {
+          this.transcriptions.sort(t => t.timestamp.getTime());
+
+          const lastTimestamp = this.transcriptions[this.transcriptions.length - 1].timestamp;
+  
+          const diff = speechService.transcriptions.filter(t => t.timestamp > lastTimestamp);
+          if (diff && diff.length > 0) {
+            diff.forEach(t => this.updateAndSignalTranscriptions(t.timestamp, t.text));
+          }
+        } else {
+          speechService.transcriptions.forEach(t => this.updateAndSignalTranscriptions(t.timestamp, t.text));
+        }
+      }, 500);
     }
 
     this.shareStream.setUrl(window.location.origin + '/view?id=' + this.streamId);
@@ -319,8 +382,11 @@ export class StreamerComponent implements OnInit {
 
   private resetOptions(): void {
     this.advancedDeviceOptions = false;
-    this.videoStreaming = null;
+    this.enableSpeechToText = false;
+    this.speechLanguage = null;
     this.userMedia = null;
+    this.validSpeechLanguage = true;
+    this.videoStreaming = null;
     
     if (this.deviceSelector) {
       this.deviceSelector.reset();
@@ -345,13 +411,13 @@ export class StreamerComponent implements OnInit {
     this.currentPlayerType = type;
     
     const player = document.createElement(type);
-    player.style.backgroundColor = '#000';
 
     if (useControls) {
       player.setAttribute('controls', '');
     }
 
     if (type === 'video') {
+      player.style.backgroundColor = '#000';
       player.style.maxWidth = '100%';
     }
 
@@ -374,5 +440,10 @@ export class StreamerComponent implements OnInit {
     player.parentElement.removeChild(player);
     
     this.log.debug(logPrefix + 'Player stopped');
+  }
+
+  private updateAndSignalTranscriptions(date: Date, text: string) {
+    this.transcriptions.push({ timestamp: date, text: text });
+    this.signaling.sendTranscription(this.streamId, text);
   }
 }

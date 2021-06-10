@@ -5,6 +5,8 @@ import { DeviceSelectorComponent } from '../device-selector/device-selector.comp
 import { GroupOf } from '../models/group-of';
 import { Size } from '../models/size';
 
+declare const speechService: any;
+
 @Component({
   selector: 'app-video-options',
   templateUrl: './video-options.component.html',
@@ -15,10 +17,14 @@ export class VideoOptionsComponent implements OnInit {
 
   availableFrameRates: number[] = this.getCommonFrameRates();
   availableSizes: GroupOf<Size>[] = [];
+  availableSpeechLanguages: any[] = speechService.supportedLanguages;
+  enableSpeechToText: boolean = false;
   selectedFrameRate?: number = 0;
   selectedSize?: Size = null;
+  speechLanguage: string = null;
   useSecondaryAudioSource: boolean;
   useSourceAudio: boolean = false;
+  validSpeechLanguage: boolean = true;
 
   constructor() { }
 
@@ -33,14 +39,23 @@ export class VideoOptionsComponent implements OnInit {
   }
 
   reset(): void {
+    this.enableSpeechToText = false;
     this.selectedFrameRate = 0;
     this.selectedSize = null;
+    this.speechLanguage = null;
     this.useSourceAudio;
     this.useSecondaryAudioSource = false;
+    this.validSpeechLanguage = true;
     
     if (this.deviceSelector) {
       this.deviceSelector.reset();
     }
+  }
+
+  speechLanguageValidate(): boolean {
+    this.validSpeechLanguage = this.speechLanguage !== undefined && this.speechLanguage !== null && this.speechLanguage.trim() !== '';
+  
+    return this.validSpeechLanguage;
   }
 
   private getCommonFrameRates(): number[] {
