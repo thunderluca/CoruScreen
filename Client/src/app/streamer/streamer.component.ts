@@ -2,9 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { Subscription } from 'rxjs';
 import { DeviceSelectorComponent } from '../device-selector/device-selector.component';
+import { SpeechServiceInterface } from '../interop/speech-service-interface';
 import { Size } from '../models/size';
-import { SpeechConfiguration } from '../models/speech-configuration';
-import { TranscribedSpeech } from '../models/transcribed-speech';
+import { SpeechConfiguration } from '../models/speech/speech-configuration';
+import { SpeechTranscription } from '../models/speech/speech-transcription';
 import { ConfigurationService } from '../services/configuration.service';
 import { LogService } from '../services/log.service';
 import { MediaService } from '../services/media.service';
@@ -16,7 +17,7 @@ import { SpeechOptionsComponent } from '../speech-options/speech-options.compone
 import { StreamStatsComponent } from '../stream-stats/stream-stats.component';
 import { VideoOptionsComponent } from '../video-options/video-options.component';
 
-declare const speechService: any;
+declare const speechService: SpeechServiceInterface;
 
 @Component({
   selector: 'app-streamer',
@@ -34,7 +35,7 @@ export class StreamerComponent implements OnInit {
   isDesktopDevice: boolean;
   microphonePermission: PermissionState;
   streamingStarted: boolean;
-  transcriptions: TranscribedSpeech[] = [];
+  transcriptions: SpeechTranscription[] = [];
   userMedia?: boolean = null;
   videoStreaming?: boolean = null;
   viewers: string[] = [];
@@ -336,10 +337,10 @@ export class StreamerComponent implements OnInit {
   
           const diff = speechService.transcriptions.filter(t => t.timestamp > lastTimestamp);
           if (diff && diff.length > 0) {
-            diff.forEach(t => this.updateAndSignalTranscriptions(t.timestamp, t.text));
+            diff.forEach(t => this.updateAndSignalTranscriptions(t));
           }
         } else {
-          speechService.transcriptions.forEach(t => this.updateAndSignalTranscriptions(t.timestamp, t.text));
+          speechService.transcriptions.forEach(t => this.updateAndSignalTranscriptions(t));
         }
       }, 500);
     }
@@ -438,8 +439,8 @@ export class StreamerComponent implements OnInit {
     this.log.debug(logPrefix + 'Player stopped');
   }
 
-  private updateAndSignalTranscriptions(date: Date, text: string) {
-    this.transcriptions.push({ timestamp: date, text: text });
-    this.signaling.sendTranscription(this.streamId, text);
+  private updateAndSignalTranscriptions(transcription: SpeechTranscription) {
+    this.transcriptions.push(transcription);
+    this.signaling.sendTranscription(this.streamId, transcription.text);
   }
 }

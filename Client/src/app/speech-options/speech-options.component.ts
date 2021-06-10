@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { SpeechServiceInterface } from '../interop/speech-service-interface';
+import { SpeechLanguage } from '../models/speech/speech-language';
 
-declare const speechService: any;
+declare const speechService: SpeechServiceInterface;
 
 @Component({
   selector: 'app-speech-options',
@@ -9,7 +11,7 @@ declare const speechService: any;
 })
 export class SpeechOptionsComponent implements OnInit {
 
-  availableLanguages: any[] = speechService.supportedLanguages;
+  availableLanguages: SpeechLanguage[] = speechService.supportedLanguages;
   enableSpeechToText: boolean = false;
   language: string = null;
   validLanguage: boolean = true;
