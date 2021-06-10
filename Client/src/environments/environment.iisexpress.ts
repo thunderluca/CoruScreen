@@ -5,5 +5,9 @@ export const environment = {
     signaling: {
       logLevel: 1,
       url: 'https://localhost:44339/stream'
+    },
+    stt: {
+      apiKey: '',
+      region: ''
     }
 };
