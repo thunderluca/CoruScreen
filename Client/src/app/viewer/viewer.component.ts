@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SignalingData } from '../models/signaling-data';
 import { StreamStatus } from '../models/stream-status';
+import { TranscribedSpeech } from '../models/transcribed-speech';
 import { LogService } from '../services/log.service';
 import { RtcService } from '../services/rtc.service';
 import { SignalingService } from '../services/signaling.service';
@@ -18,7 +19,7 @@ export class ViewerComponent implements OnInit {
   currentTranscription: string;
   hideStatusMessages: boolean = false;
   streamStatus: StreamStatus = StreamStatus.Buffering;
-  transcriptions: string[] = [];
+  transcriptions: TranscribedSpeech[] = [];
   useDarkTheme: boolean = false;
 
   private connectionTickCounter: number;
@@ -26,6 +27,7 @@ export class ViewerComponent implements OnInit {
   private currentStream?: MediaStream;
   private streamId: string;
   private eventsSubscription: Subscription = new Subscription();
+  private transcriptionsTimeout: NodeJS.Timeout;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -60,10 +62,11 @@ export class ViewerComponent implements OnInit {
           this.signaling.registerCallback('transcriptionReceived', (args: any[]) => {      
             const transcription = args[0] as string;
 
-            if (transcription !== undefined && transcription !== null && transcription.trim() !== '')
-              this.transcriptions.push(transcription);
+            if (transcription !== undefined && transcription !== null && transcription.trim() !== '') {
+              this.transcriptions.push({ timestamp: new Date(), text: transcription });
 
-            this.currentTranscription = this.transcriptions.join(' ');
+              this.updateTranscriptions();
+            }
           });
 
           this.eventsSubscription.add(this.rtc.stream$.subscribe((signal: SignalingData) => {
@@ -72,11 +75,16 @@ export class ViewerComponent implements OnInit {
             this.startPlayer(signal, true);
 
             this.streamStatus = StreamStatus.Playing;
+
+            this.transcriptionsTimeout = setInterval(this.updateTranscriptions, 1000);
           }));
 
           this.eventsSubscription.add(this.signaling.streamStopped$.subscribe((result: boolean) => {
             if (result) {
               this.stopPlayer();
+
+              if (this.transcriptionsTimeout)
+                clearInterval(this.transcriptionsTimeout);
 
               this.streamStatus = StreamStatus.Ended;
             }
@@ -222,5 +230,16 @@ export class ViewerComponent implements OnInit {
     this.rtc.destroyPeers([]);
 
     this.log.debug(logPrefix + 'Player stopped');
+  }
+
+  private updateTranscriptions(): void {
+    if (!this.transcriptions || this.transcriptions.length === 0) {
+      this.currentTranscription = '';
+      return;
+    }
+
+    this.transcriptions = this.transcriptions.filter(t => t.timestamp >= new Date(Date.now() - 5000));
+  
+    this.currentTranscription = this.transcriptions.length === 0 ? '' : this.transcriptions.map(t => t.text).join(' ');
   }
 }
