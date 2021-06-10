@@ -406,6 +406,7 @@ export class StreamerComponent implements OnInit {
     this.currentPlayerType = type;
     
     const player = document.createElement(type);
+    player.muted = true;
 
     if (useControls) {
       player.setAttribute('controls', '');
@@ -414,7 +415,6 @@ export class StreamerComponent implements OnInit {
     if (type === 'video') {
       player.style.backgroundColor = '#000';
       player.style.maxWidth = '100%';
-      player.muted = true;
     }
 
     player.srcObject = this.currentStream;
