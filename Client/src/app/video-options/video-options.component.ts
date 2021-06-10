@@ -4,8 +4,7 @@ import { groupBy, mergeMap, reduce, toArray } from 'rxjs/operators';
 import { DeviceSelectorComponent } from '../device-selector/device-selector.component';
 import { GroupOf } from '../models/group-of';
 import { Size } from '../models/size';
-
-declare const speechService: any;
+import { SpeechOptionsComponent } from '../speech-options/speech-options.component';
 
 @Component({
   selector: 'app-video-options',
@@ -14,17 +13,14 @@ declare const speechService: any;
 })
 export class VideoOptionsComponent implements OnInit {
   @ViewChild(DeviceSelectorComponent) deviceSelector: DeviceSelectorComponent;
+  @ViewChild(SpeechOptionsComponent) speechOptions: SpeechOptionsComponent;
 
   availableFrameRates: number[] = this.getCommonFrameRates();
   availableSizes: GroupOf<Size>[] = [];
-  availableSpeechLanguages: any[] = speechService.supportedLanguages;
-  enableSpeechToText: boolean = false;
   selectedFrameRate?: number = 0;
   selectedSize?: Size = null;
-  speechLanguage: string = null;
   useSecondaryAudioSource: boolean;
   useSourceAudio: boolean = false;
-  validSpeechLanguage: boolean = true;
 
   constructor() { }
 
@@ -39,23 +35,18 @@ export class VideoOptionsComponent implements OnInit {
   }
 
   reset(): void {
-    this.enableSpeechToText = false;
     this.selectedFrameRate = 0;
     this.selectedSize = null;
-    this.speechLanguage = null;
     this.useSourceAudio;
     this.useSecondaryAudioSource = false;
-    this.validSpeechLanguage = true;
     
     if (this.deviceSelector) {
       this.deviceSelector.reset();
     }
-  }
 
-  speechLanguageValidate(): boolean {
-    this.validSpeechLanguage = this.speechLanguage !== undefined && this.speechLanguage !== null && this.speechLanguage.trim() !== '';
-  
-    return this.validSpeechLanguage;
+    if (this.speechOptions) {
+      this.speechOptions.reset();
+    }
   }
 
   private getCommonFrameRates(): number[] {

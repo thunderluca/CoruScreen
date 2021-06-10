@@ -12,6 +12,7 @@ import { RngService } from '../services/rng.service';
 import { RtcService } from '../services/rtc.service';
 import { SignalingService } from '../services/signaling.service';
 import { ShareStreamComponent } from '../share-stream/share-stream.component';
+import { SpeechOptionsComponent } from '../speech-options/speech-options.component';
 import { StreamStatsComponent } from '../stream-stats/stream-stats.component';
 import { VideoOptionsComponent } from '../video-options/video-options.component';
 
@@ -25,19 +26,16 @@ declare const speechService: any;
 export class StreamerComponent implements OnInit {
   @ViewChild(DeviceSelectorComponent) deviceSelector: DeviceSelectorComponent;
   @ViewChild(ShareStreamComponent) shareStream: ShareStreamComponent;
+  @ViewChild(SpeechOptionsComponent) speechOptions: SpeechOptionsComponent;
   @ViewChild(StreamStatsComponent) streamStats: StreamStatsComponent;
   @ViewChild(VideoOptionsComponent) videoOptions: VideoOptionsComponent;
 
   advancedDeviceOptions: boolean;
-  availableSpeechLanguages: any[] = speechService.supportedLanguages;
-  enableSpeechToText: boolean;
   isDesktopDevice: boolean;
   microphonePermission: PermissionState;
-  speechLanguage: string = null;
   streamingStarted: boolean;
   transcriptions: TranscribedSpeech[] = [];
   userMedia?: boolean = null;
-  validSpeechLanguage: boolean = true;
   videoStreaming?: boolean = null;
   viewers: string[] = [];
   webcamPermission: PermissionState;
@@ -203,12 +201,6 @@ export class StreamerComponent implements OnInit {
     }
   }
 
-  speechLanguageValidate(): boolean {
-    this.validSpeechLanguage = this.speechLanguage !== undefined && this.speechLanguage !== null && this.speechLanguage.trim() !== '';
-  
-    return this.validSpeechLanguage;
-  }
-
   startStream(): void {
     const logPrefix = 'StreamerComponent.startStream - ';
 
@@ -258,7 +250,7 @@ export class StreamerComponent implements OnInit {
     this.signaling.endStreamAsync(this.streamId)
       .then(() => {
 
-        if (this.enableSpeechToText || this.videoOptions.enableSpeechToText) {
+        if (this.speechOptions.enableSpeechToText || this.videoOptions.speechOptions.enableSpeechToText) {
           if (this.transcriptionsTimeout) {
             clearInterval(this.transcriptionsTimeout);
             this.transcriptionsTimeout = null;
@@ -299,8 +291,10 @@ export class StreamerComponent implements OnInit {
     }
 
     let speechLanguageNotSelected = false;
-    if (this.enableSpeechToText || this.videoOptions.enableSpeechToText) {
-      speechLanguageNotSelected = this.enableSpeechToText ? !this.speechLanguageValidate() : !this.videoOptions.speechLanguageValidate();
+    if (this.speechOptions.enableSpeechToText || this.videoOptions.speechOptions.enableSpeechToText) {
+      speechLanguageNotSelected = this.speechOptions.enableSpeechToText
+        ? !this.speechOptions.validate()
+        : !this.videoOptions.speechOptions.validate();
     }
 
     if (inputDeviceNotSelected || speechLanguageNotSelected) {
@@ -325,12 +319,12 @@ export class StreamerComponent implements OnInit {
       }
     }
 
-    if (this.advancedDeviceOptions && (this.enableSpeechToText || this.videoOptions.enableSpeechToText)) {
+    if (this.advancedDeviceOptions && (this.speechOptions.enableSpeechToText || this.videoOptions.speechOptions.enableSpeechToText)) {
       const speechConfiguration = this.configuration.get<SpeechConfiguration>('stt');
 
       speechConfiguration.deviceId = this.userMedia ? this.deviceSelector.selectedDeviceId : this.videoOptions.deviceSelector.selectedDeviceId;
       speechConfiguration.isDebugMode = this.configuration.get('debug') as boolean;
-      speechConfiguration.language = this.speechLanguage ?? this.videoOptions.speechLanguage;
+      speechConfiguration.language = this.speechOptions.language ?? this.videoOptions.speechOptions.language;
 
       speechService.startTranslate(speechConfiguration);
 
@@ -382,14 +376,15 @@ export class StreamerComponent implements OnInit {
 
   private resetOptions(): void {
     this.advancedDeviceOptions = false;
-    this.enableSpeechToText = false;
-    this.speechLanguage = null;
     this.userMedia = null;
-    this.validSpeechLanguage = true;
     this.videoStreaming = null;
     
     if (this.deviceSelector) {
       this.deviceSelector.reset();
+    }
+
+    if (this.speechOptions) {
+      this.speechOptions.reset();
     }
 
     if (this.streamStats) {

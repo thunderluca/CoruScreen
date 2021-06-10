@@ -20,17 +20,8 @@
         <div [class]="useSecondaryAudioSource ? 'mb-3' : 'd-none'">
             <app-device-selector></app-device-selector>
         </div>
-        <div [class]="useSecondaryAudioSource ? 'mb-3 form-check form-switch' : 'd-none'" title="Enable Speech-To-Text feature to transcribe audio input source using selected language">
-            <input type="checkbox" class="form-check-input" id="speech-to-text" name="speech-to-text" [(ngModel)]="enableSpeechToText" />
-            <label class="form-check-label" for="speech-to-text">Enable speech to text</label>
-        </div>
-        <div [class]="enableSpeechToText ? 'mb-3' : 'd-none'" title="Choose language for Speech-To-Text functionality">
-            <label for="speech-language" class="form-label">Speech-To-Text language</label>
-            <select class="form-select" name="speech-language" [(ngModel)]="speechLanguage" (ngModelChange)="speechLanguageValidate()">
-                <option [ngValue]="null">Select language</option>
-                <option *ngFor="let language of availableSpeechLanguages" [value]="language.code">{{ language.name }}</option>
-            </select>
-            <div class="text-danger" *ngIf="!validSpeechLanguage">Choose a language</div>
+        <div [class]="useSecondaryAudioSource ? 'mb-3' : 'd-none'">
+            <app-speech-options></app-speech-options>
         </div>
     </div>
     <div class="col-md-6">
