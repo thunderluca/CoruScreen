@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import * as SimplePeer from 'simple-peer';
-import { Instance } from 'simple-peer';
+import { Instance, SignalData } from 'simple-peer';
 import { Connection } from '../models/connection';
 import { AudioReport } from '../models/rtc/audio-report';
 import { RtcReport } from '../models/rtc/rtc-report';
@@ -59,7 +59,7 @@ export class RtcService {
 
     const peer = new SimplePeer({ initiator: true, stream: stream });
 
-    peer.on('signal', (data: SimplePeer.SignalData) => {
+    peer.on('signal', (data: SignalData) => {
       this.signaling.sendDataAsync(clientId, data)
         .then(result => {
           if (result) {
@@ -179,7 +179,7 @@ export class RtcService {
 
     const peer = new SimplePeer();
 
-    peer.on('signal', (data: SimplePeer.SignalData) => {
+    peer.on('signal', (data: SignalData) => {
       this.signaling.sendDataAsync(clientId, data)
         .then(result => {
           if (result) {
