@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StringHelper } from '../helpers/string-helper';
 import { SpeechServiceInterface } from '../interop/speech-service-interface';
 import { SpeechLanguage } from '../models/speech/speech-language';
 
@@ -28,7 +29,7 @@ export class SpeechOptionsComponent implements OnInit {
   }
 
   validate(): boolean {
-    this.validLanguage = this.language !== undefined && this.language !== null && this.language.trim() !== '';
+    this.validLanguage = !StringHelper.nullOrWhiteSpace(this.language);
   
     return this.validLanguage;
   }

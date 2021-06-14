@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { StringHelper } from '../helpers/string-helper';
 import { SignalingData } from '../models/signaling-data';
 import { SpeechTranscription } from '../models/speech/speech-transcription';
 import { StreamStatus } from '../models/stream-status';
@@ -39,7 +40,7 @@ export class ViewerComponent implements OnInit {
     const logPrefix = 'ViewerComponent.ngOnInit - ';
 
     this.streamId = this.activatedRoute.snapshot.queryParams.id;
-    if (this.streamId === undefined || this.streamId === null || this.streamId.trim() === '') {
+    if (StringHelper.nullOrWhiteSpace(this.streamId)) {
       throw new Error('Stream ID cannot be null, empty or blank');
     }
 
@@ -62,7 +63,7 @@ export class ViewerComponent implements OnInit {
           this.signaling.registerCallback('transcriptionReceived', (args: any[]) => {      
             const transcription = args[0] as string;
 
-            if (transcription !== undefined && transcription !== null && transcription.trim() !== '') {
+            if (StringHelper.nullOrWhiteSpace(transcription)) {
               this.transcriptions.push({ timestamp: new Date(), text: transcription });
 
               this.updateTranscriptions();

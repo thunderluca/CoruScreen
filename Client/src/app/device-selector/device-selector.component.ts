@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StringHelper } from '../helpers/string-helper';
 import { LogService } from '../services/log.service';
 import { MediaService } from '../services/media.service';
 
@@ -47,7 +48,7 @@ export class DeviceSelectorComponent implements OnInit {
   }
 
   validate(): boolean {
-    this.validDeviceId = this.selectedDeviceId !== undefined && this.selectedDeviceId !== null && this.selectedDeviceId.trim() !== '';
+    this.validDeviceId = !StringHelper.nullOrWhiteSpace(this.selectedDeviceId);
 
     return this.validDeviceId;
   }
