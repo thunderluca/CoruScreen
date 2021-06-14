@@ -63,7 +63,7 @@ export class ViewerComponent implements OnInit {
           this.signaling.registerCallback('transcriptionReceived', (args: any[]) => {      
             const transcription = args[0] as string;
 
-            if (StringHelper.nullOrWhiteSpace(transcription)) {
+            if (!StringHelper.nullOrWhiteSpace(transcription)) {
               this.transcriptions.push({ timestamp: new Date(), text: transcription });
 
               this.updateTranscriptions();
