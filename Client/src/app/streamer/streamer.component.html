@@ -54,8 +54,8 @@
                     </h2>
                     <div class="accordion-collapse collapse" id="control-collapse" aria-labelledby="control-header" data-bs-parent="#setup-accordion">
                         <div class="accordion-body">
-                            <div *ngIf="!deviceTypeChosen()">You need to choose the device type first</div>
-                            <div *ngIf="deviceTypeChosen()">
+                            <div *ngIf="!deviceSelected()">You need to select the device first</div>
+                            <div *ngIf="deviceSelected()">
                                 <div class="row">
                                     <div class="col-md-3 col-sm-12 mb-3">
                                         <button *ngIf="!streamingStarted" type="button" class="btn btn-success me-3" (click)="startStream()" title="Start your stream">Start stream</button>

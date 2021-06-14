@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { Subscription } from 'rxjs';
 import { DeviceSelectorComponent } from '../device-selector/device-selector.component';
+import { StringHelper } from '../helpers/string-helper';
 import { SpeechServiceInterface } from '../interop/speech-service-interface';
 import { Size } from '../models/size';
 import { SpeechConfiguration } from '../models/speech/speech-configuration';
@@ -92,6 +93,18 @@ export class StreamerComponent implements OnInit {
       && this.videoStreaming !== null
       && this.userMedia !== undefined
       && this.userMedia !== null;
+  }
+
+  deviceSelected(): boolean {
+    if (!this.deviceTypeChosen())
+      return false;
+
+    if (!this.userMedia) {
+      return true;
+    }
+
+    return !StringHelper.nullOrWhiteSpace(this.deviceSelector.selectedDeviceId) 
+      || !StringHelper.nullOrWhiteSpace(this.videoOptions.deviceSelector.selectedDeviceId);
   }
 
   ngOnInit(): void {
