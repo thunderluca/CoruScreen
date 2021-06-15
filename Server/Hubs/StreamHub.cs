@@ -23,14 +23,14 @@ namespace CoruScreen.Server.Hubs
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, id);
 
-            _logger.LogInformation($"Stream group with id {id} created");
+            _logger.LogDebug($"Stream group with id {id} created");
         }
 
         public async Task EndStream(string id)
         {
             await Clients.GroupExcept(id, Context.ConnectionId).SendAsync("streamEnded");
 
-            _logger.LogInformation($"Stream end notified to group with id {id}");
+            _logger.LogDebug($"Stream end notified to group with id {id}");
         }
 
         public async Task Join(string id)
@@ -39,7 +39,7 @@ namespace CoruScreen.Server.Hubs
 
             await Clients.GroupExcept(id, Context.ConnectionId).SendAsync("userJoined", Context.ConnectionId);
 
-            _logger.LogInformation($"User with id {Context.ConnectionId} added to stream group {id}");
+            _logger.LogDebug($"User with id {Context.ConnectionId} added to stream group {id}");
         }
 
         public async Task Leave(string id)
@@ -48,7 +48,7 @@ namespace CoruScreen.Server.Hubs
 
             await Clients.GroupExcept(id, Context.ConnectionId).SendAsync("userLeaved", Context.ConnectionId);
 
-            _logger.LogInformation($"User with id {Context.ConnectionId} leaved stream group {id}");
+            _logger.LogDebug($"User with id {Context.ConnectionId} leaved stream group {id}");
         }
 
         public async Task SendSignal(string clientId, string signal)
@@ -68,7 +68,7 @@ namespace CoruScreen.Server.Hubs
 
             await client.SendAsync("signalReceived", Context.ConnectionId, signal);
 
-            _logger.LogInformation($"Signal sent from {Context.ConnectionId} to {clientId}");
+            _logger.LogDebug($"Signal sent from {Context.ConnectionId} to {clientId}");
         }
 
         public Task SendTranscription(string id, string text)
