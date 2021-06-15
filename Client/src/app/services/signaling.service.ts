@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { StringHelper } from '../helpers/string-helper';
 import { SignalingConfiguration } from '../models/signaling-configuration';
 import { ConfigurationService } from './configuration.service';
 import { LogService } from './log.service';
@@ -110,6 +111,10 @@ export class SignalingService {
 
   async sendDataAsync(clientId: string, data: any): Promise<boolean> {
     const logPrefix = 'SignalingService.sendDataAsync - ';
+
+    if (StringHelper.nullOrWhiteSpace(clientId)) {
+      return false;
+    }
 
     try {
       await this.connection.invoke('sendSignal', clientId, JSON.stringify(data));

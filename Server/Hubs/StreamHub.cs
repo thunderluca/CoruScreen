@@ -53,7 +53,7 @@ namespace CoruScreen.Server.Hubs
 
         public async Task SendSignal(string clientId, string signal)
         {
-            if (string.IsNullOrWhiteSpace(clientId) || Clients.Client(clientId) == null)
+            if (string.IsNullOrWhiteSpace(clientId))
             {
                 _logger.LogError("Received signal with null, empty or blank client id");
                 return;
