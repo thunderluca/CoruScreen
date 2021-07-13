@@ -12,7 +12,12 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CorsPolicy__AllowCredentials": "true",
+        "CorsPolicy__Methods__0": "*",
+        "CorsPolicy__Name": "ClientPolicy",
+        "CorsPolicy__Origins__0": "http://localhost:4200",
+        "CorsPolicy__Headers__0": "*"
       }
     },
     "Server": {
@@ -21,7 +26,12 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CorsPolicy__AllowCredentials": "true",
+        "CorsPolicy__Methods__0": "*",
+        "CorsPolicy__Name": "ClientPolicy",
+        "CorsPolicy__Origins__0": "http://localhost:4200",
+        "CorsPolicy__Headers__0": "*"
       }
     }
   }

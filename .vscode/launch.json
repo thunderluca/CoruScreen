@@ -20,7 +20,12 @@
                 "pattern": "\\\\bNow listening on:\\\\s+(https?://\\\\S+)"
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "CorsPolicy__AllowCredentials": "true",
+                "CorsPolicy__Methods__0": "*",
+                "CorsPolicy__Name": "ClientPolicy",
+                "CorsPolicy__Origins__0": "http://localhost:4200",
+                "CorsPolicy__Headers__0": "*"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
