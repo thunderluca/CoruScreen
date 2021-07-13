@@ -31,6 +31,7 @@ namespace CoruScreen.Server
                 Console.WriteLine($"Cors policy '{corsPolicy.Name}' successfully registered");
             }
 
+            services.AddControllers();
             services.AddSignalR();
         }
 
@@ -53,6 +54,9 @@ namespace CoruScreen.Server
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHub<StreamHub>("/stream");
             });
         }
