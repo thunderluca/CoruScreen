@@ -1,10 +1,5 @@
 using CoruScreen.Server.Hubs;
 using CoruScreen.Server.Models;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
