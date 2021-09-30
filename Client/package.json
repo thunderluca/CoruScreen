@@ -20,7 +20,7 @@
     "@angular/platform-browser-dynamic": "^12.2.8",
     "@angular/router": "^12.2.8",
     "@microsoft/signalr": "^5.0.10",
-    "@popperjs/core": "^2.10.1",
+    "@popperjs/core": "^2.10.2",
     "bootstrap": "^5.1.1",
     "bowser": "^2.11.0",
     "ngx-device-detector": "^2.1.1",
