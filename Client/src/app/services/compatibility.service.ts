@@ -28,25 +28,26 @@ export class CompatibilityService {
 
     const browserName = browser.getBrowserName(true);
 
-    const version = browser.getBrowserVersion();
+    const versionString = browser.getBrowserVersion();
+    if (!versionString) {
+      return false;
+    }
+
+    const version = +(versionString.split('.')[0]);
 
     if (!this.isPermissionsApiSupportedVersion(browserName, platform, version)) {
       return false;
     }
 
     const appBrowserRequirementMatches = BrowserRequirement.DEFAULT.filter(br => {
-      return br.feature === 'app' 
+      return br.feature === 'app'
         && br.names.indexOf(browserName) > -1
         && (br.operatingSystems.indexOf(OperatingSystem.Any) > -1 || br.operatingSystems.indexOf(operatingSystem) > -1)
         && (br.platforms.indexOf(DevicePlatform.Any) > -1 || br.platforms.indexOf(platform) > -1)
         && br.version <= version;
     });
 
-    if (!appBrowserRequirementMatches || appBrowserRequirementMatches.length === 0) {
-      return false;
-    } 
-
-    return true;
+    return !!appBrowserRequirementMatches && appBrowserRequirementMatches.length > 0;
   }
 
   isWebRTCAvailable(): boolean {
@@ -59,7 +60,7 @@ export class CompatibilityService {
   }
   
   // https://caniuse.com/?search=Permissions
-  private isPermissionsApiSupportedVersion(browserName: string, platform: DevicePlatform, version: string): boolean {
+  private isPermissionsApiSupportedVersion(browserName: string, platform: DevicePlatform, version: number): boolean {
     const browserRequirement = BrowserRequirement.DEFAULT.find(br => {
       return br.feature === 'permissions' 
         && br.names.indexOf(browserName) > -1
@@ -67,11 +68,7 @@ export class CompatibilityService {
         && br.version <= version;
     });
 
-    if (!browserRequirement) {
-      return false;
-    }
-
-    return version >= browserRequirement.version;
+    return !!browserRequirement && version >= browserRequirement.version;
   }
 
   private mapDevicePlatform(platform: string): DevicePlatform {

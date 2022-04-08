@@ -20,7 +20,8 @@ export class SignalingService {
 
   constructor(
     configuration: ConfigurationService,
-    private log: LogService) {
+    private log: LogService
+  ) {
     this.viewers = new BehaviorSubject([]);
     this.viewers$ = this.viewers.asObservable();
 

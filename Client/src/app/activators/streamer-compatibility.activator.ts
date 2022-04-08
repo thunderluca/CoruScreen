@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
+import { ActivatedRouteSnapshot, CanActivate, Router } from "@angular/router";
 import { CompatibilityService } from "../services/compatibility.service";
 
 @Injectable({
@@ -8,14 +8,15 @@ import { CompatibilityService } from "../services/compatibility.service";
 export class StreamerCompatibilityActivator implements CanActivate {
     constructor(private compatibility: CompatibilityService, private router: Router) {}
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    canActivate(route: ActivatedRouteSnapshot): boolean {
         const skipBrowserCheck = route.queryParams.sbc === '1';
-        if (!skipBrowserCheck) {
-            const supportedBrowser = this.compatibility.isSupportedBrowser();
-            if (!supportedBrowser) {
-                this.router.navigate(['browsernotsupported']);
-                return false;
-            }
+        if (skipBrowserCheck) {
+            return true;
+        }
+
+        if (!this.compatibility.isSupportedBrowser()) {
+            this.router.navigate(['browsernotsupported']);
+            return false;
         }
 
         return true;

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
+import { CanActivate, Router } from "@angular/router";
 import { CompatibilityService } from "../services/compatibility.service";
 
 @Injectable({
@@ -8,13 +8,8 @@ import { CompatibilityService } from "../services/compatibility.service";
 export class ReverseCompatibilityActivator implements CanActivate {
     constructor(private compatibility: CompatibilityService, private router: Router) {}
     
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        const isWebRTCAvailable = this.compatibility.isWebRTCAvailable();
-
-        const supportedBrowser = this.compatibility.isSupportedBrowser();
-        
-        const canActivate = isWebRTCAvailable && supportedBrowser;
-
+    canActivate(): boolean {
+        const canActivate = this.compatibility.isWebRTCAvailable() && this.compatibility.isSupportedBrowser();
         if (canActivate) {
             this.router.navigate(['/']);
         }

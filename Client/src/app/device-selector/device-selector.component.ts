@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { StringHelper } from '../helpers/string-helper';
 import { LogService } from '../services/log.service';
 import { MediaService } from '../services/media.service';
@@ -8,7 +8,7 @@ import { MediaService } from '../services/media.service';
   templateUrl: './device-selector.component.html',
   styleUrls: ['./device-selector.component.css']
 })
-export class DeviceSelectorComponent implements OnInit {
+export class DeviceSelectorComponent {
   availableDevices: MediaDeviceInfo[] = [];
   selectedDeviceId?: string = null;
   validDeviceId: boolean = true;
@@ -16,9 +16,6 @@ export class DeviceSelectorComponent implements OnInit {
   private selectedDeviceKinds: MediaDeviceKind[] = [];
 
   constructor(private log: LogService, private media: MediaService) { }
-
-  ngOnInit(): void {
-  }
 
   loadDeviceList(kinds: MediaDeviceKind[]): void {
     const logPrefix = 'DeviceSelectorComponent.loadDeviceList - ';
@@ -48,8 +45,6 @@ export class DeviceSelectorComponent implements OnInit {
   }
 
   validate(): boolean {
-    this.validDeviceId = !StringHelper.nullOrWhiteSpace(this.selectedDeviceId);
-
-    return this.validDeviceId;
+    return !StringHelper.nullOrWhiteSpace(this.selectedDeviceId);
   }
 }

@@ -5,7 +5,6 @@ import { ConfigurationService } from './configuration.service';
   providedIn: 'root'
 })
 export class LogService {
-
   private isDebugMode: boolean;
 
   constructor(configuration: ConfigurationService) {

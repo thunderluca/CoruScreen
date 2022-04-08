@@ -5,13 +5,12 @@ import { Injectable } from '@angular/core';
 })
 export class RngService {
   generate(length: number): string {
-    var id = '';
+    let id = '';
 
-    var charSet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const charSet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
     
-    for (var i = 0; i < length; i++){
+    for (let i = 0; i < length; i++)
       id += charSet.charAt(Math.floor(Math.random() * charSet.length));
-    }
     
     return id;
   };

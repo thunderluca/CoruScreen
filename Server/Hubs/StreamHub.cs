@@ -8,10 +8,7 @@ namespace CoruScreen.Server.Hubs
 
         public StreamHub(ILoggerFactory loggerFactory)
         {
-            if (loggerFactory == null)
-            {
-                throw new ArgumentNullException(nameof(loggerFactory));
-            }
+            ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
 
             _logger = loggerFactory.CreateLogger<StreamHub>();
         }
@@ -57,7 +54,7 @@ namespace CoruScreen.Server.Hubs
             }
 
             var client = Clients.Client(clientId);
-            if (client == null)
+            if (client is null)
             {
                 _logger.LogError($"Client with id {clientId} not found");
                 return;

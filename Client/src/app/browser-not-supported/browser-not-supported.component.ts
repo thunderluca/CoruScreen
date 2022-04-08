@@ -9,23 +9,24 @@ import { BrowserRequirement } from '../models/browser-requirement';
   styleUrls: ['./browser-not-supported.component.css']
 })
 export class BrowserNotSupportedComponent {
-  browserRequirements: BrowserRequirement[] = BrowserRequirement.DEFAULT
-    .filter(br => br.feature === 'app');
-  
-  browserName: string;
-  browserVersion: string;
-  operatingSystem: string;
-  platform: string;
-  userAgent: string;
+  public browserName: string;
+  public browserRequirements: BrowserRequirement[]; 
+  public browserVersion: string;
+  public operatingSystem: string;
+  public platform: string;
+  public userAgent: string;
 
   constructor(activatedRoute: ActivatedRoute) {
-    if (activatedRoute.snapshot.queryParams.dbg === '1') {
-      this.userAgent = navigator.userAgent;   
-      const browser = Bowser.getParser(navigator.userAgent);
-      this.browserName = browser.getBrowserName();
-      this.browserVersion = browser.getBrowserVersion();
-      this.operatingSystem = browser.getOSName();
-      this.platform = browser.getPlatformType();
+    this.browserRequirements = BrowserRequirement.DEFAULT.filter(br => br.feature === 'app');
+    if (activatedRoute.snapshot.queryParams.dbg !== '1') {
+      return;
     }
+
+    this.userAgent = navigator.userAgent;   
+    const browser = Bowser.getParser(navigator.userAgent);
+    this.browserName = browser.getBrowserName();
+    this.browserVersion = browser.getBrowserVersion();
+    this.operatingSystem = browser.getOSName();
+    this.platform = browser.getPlatformType();
   }
 }
