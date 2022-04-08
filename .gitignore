@@ -367,3 +367,4 @@ Client/dist
 Client/src/environments/environment.prod.ts
 Server/appsettings.Production.json
 Server/Properties/ServiceDependencies/* - Web Deploy/profile.arm.json
+**/.angular
