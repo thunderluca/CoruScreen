@@ -6,19 +6,16 @@ namespace CoruScreen.Server.Models
     {
         public static bool AllowsAnyValue<T>(this CorsPolicy policy, Func<CorsPolicy, T> propertyFunc) where T : IList<string>
         {
-            if (policy == null)
-            {
-                throw new ArgumentNullException(nameof(policy));
-            }
+            ArgumentNullException.ThrowIfNull(policy, nameof(policy));
 
             var collection = propertyFunc(policy);
 
-            if (collection == null || collection.Count == 0)
+            if (collection is null || collection.Count is 0)
             {
                 return true;
             }
 
-            if (collection.Count == 1 && collection[0]?.Trim() == "*")
+            if (collection.Count is 1 && collection[0]?.Trim() is "*")
             {
                 return true;
             }
@@ -28,15 +25,8 @@ namespace CoruScreen.Server.Models
 
         public static CorsPolicyBuilder BuildUponPolicy(this CorsPolicyBuilder builder, CorsPolicy policy)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (policy == null)
-            {
-                throw new ArgumentNullException(nameof(policy));
-            }
+            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(policy, nameof(policy));
  
             if (policy.AllowsAnyValue(p => p.Origins))
             {
