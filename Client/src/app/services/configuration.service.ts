@@ -5,7 +5,6 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ConfigurationService {
-
   private configuration = {};
 
   constructor() {

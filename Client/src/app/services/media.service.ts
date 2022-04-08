@@ -6,6 +6,7 @@ import { LogService } from './log.service';
   providedIn: 'root'
 })
 export class MediaService {
+  private navigatorPermissions = navigator.permissions as any;
 
   constructor(private log: LogService) {}
 
@@ -19,9 +20,7 @@ export class MediaService {
 
     let devices = await navigator.mediaDevices.enumerateDevices();
 
-    devices = devices.filter(device => device.label != '' && kinds.indexOf(device.kind) > -1);
-
-    return devices;
+    return devices.filter(device => device.label != '' && kinds.indexOf(device.kind) > -1);
   }
 
   disposeStream(stream: MediaStream, removeTracks: boolean) {
@@ -79,7 +78,7 @@ export class MediaService {
         return null;
       }
 
-      const permissionStatus = await navigator.permissions.query({ name:'microphone' });
+      const permissionStatus = await this.navigatorPermissions.query({ name:'microphone' });
       return permissionStatus.state;
     } catch (error: any) {
       this.log.error(logPrefix + error);
@@ -95,7 +94,7 @@ export class MediaService {
         return null;
       }
 
-      const permissionStatus = await navigator.permissions.query({ name:'camera' });
+      const permissionStatus = await this.navigatorPermissions.query({ name:'camera' });
       return permissionStatus.state;
     } catch (error: any) {
       this.log.error(logPrefix + error);
